@@ -136,6 +136,8 @@ related_skills:
 
 > 加载态的作用是**让等待不那么难熬**，不是**让慢变得合理**。
 
+**拿不准形态时，给并排对比演示。** 用 `motion-term-lookup/reference/demo-template.html` 的对比模式（`.stages.compare`）：左边演「转圈」，右边演「骨架屏」，让他在同一个等待时长里亲眼感受哪种更不焦虑。参数与 `motion-param-calibrate/reference/easing-duration.md` 一致。**交付物有且只有这一个 HTML 文件。**
+
 ---
 
 1. **估等待时长。**

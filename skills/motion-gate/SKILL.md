@@ -173,6 +173,8 @@ related_skills:
 
 **输出方式要改**：新手要的是「加/不加 + 理由一句 + 如果加，抄这句话术」。不要给他三行判定表加档位说明——那是给人做设计评审用的。
 
+**「加了到底好不好」说不服时，给对比演示。** 用 `motion-term-lookup/reference/demo-template.html` 的对比模式（`.stages.compare`）：左边演「没加动效」，右边演「加了动效」，让他亲眼比较两者的注意力成本。参数与 `motion-param-calibrate/reference/easing-duration.md` 一致。**交付物有且只有这一个 HTML 文件。**
+
 ---
 
 **1. 先问频率，不要先问效果。**

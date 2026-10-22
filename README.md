@@ -16,6 +16,15 @@
 想直接抄一段能用的，翻 [组件配方](skills/interaction-brief/reference/recipes.md)。
 觉得自己加太多了，翻 [motion-gate](skills/motion-gate/)。
 
+## 在线演示
+
+**[demo.html](demo.html)** — 35 个词条做成真的会动的演示卡：悬停的真能悬停、弹窗的真能弹、骨架屏能看到它变成真内容、FLIP 补位能拖能删。每张卡附可直接复制给 AI 的话术。
+
+GitHub Pages 开启后在线地址：https://sherrycw.github.io/FrontEnd/demo.html
+本地直接双击 `demo.html` 也能打开，零依赖。
+
+**演示是 skill 的能力，不只是这个页面。** 六个 skill 都带同一条行为规范：用户看不懂文字描述时，agent 用 [`demo-template.html`](skills/motion-term-lookup/reference/demo-template.html) 生成一个能直接打开的单文件演示。`param-calibrate`、`motion-gate`、`motion-audit`、`loading-state-pick` 用它的对比模式演「改前 vs 改后」「加了 vs 没加」——对比演示是同类词库没有的能力。
+
 ## 要解决的问题
 
 很具体：你想让某个东西动一下，但说不清怎么动。「高级一点」「有点科技感」「照着 XX 网站那样」丢给 AI，每次做出来都不一样——你没说清它往哪动、动多久、动完停在哪。

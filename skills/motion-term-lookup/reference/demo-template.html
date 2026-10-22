@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!--
+  动效演示模板（agent 用）
+  =====================
+  用途：当用户看不懂文字描述的动效时，复制本模板，替换标记为 【填】 的位置，生成一个能直接打开的单文件演示页。
+
+  使用方法（对 agent）：
+  1. 复制整个文件。
+  2. 替换【填】标题、【填】说明、【填】话术 三处文案。
+  3. 在 <style> 的「演示区动画样式」注释处写本词条的 CSS/动画；在 stage 里写 HTML。
+  4. 参数必须与 motion-param-calibrate/reference/easing-duration.md 一致（时长、曲线名、ease-out 默认）。
+  5. 若做「对比演示」（改前 vs 改后、加了 vs 没加），取消注释第二列 stage，两列分别演两种方案——
+     这是新手最快理解差异的方式，优先于纯文字对比。
+  6. 交付物有且只有这一个 HTML 文件，不要附带说明文档。
+  7. 文件命名建议：demo-<术语英文名>.html，全小写，如 demo-hover-lift.html。
+
+  验收标准：
+  - 双击能打开，不需要联网，不需要任何依赖。
+  - 动画能重播（一次性动画必须有重播按钮，已内置）。
+  - 把 stage 截图给一个不懂技术的人看，他能说出「这个在干嘛」。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>【填】词条名 · 动效演示</title>
+<style>
+:root{
+  --ink:#1a1d26; --sub:#5c6270; --faint:#9aa0ad;
+  --line:#e6e8ee; --bg:#f6f7fa; --card:#ffffff;
+  --brand:#4f46e5; --brand-soft:#eef0ff;
+  --ease-out:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:44px 20px 60px}
+h1{font-size:24px;letter-spacing:-.02em}
+h1 .en{color:var(--faint);font-weight:500;font-size:15px;margin-left:8px}
+.desc{color:var(--sub);margin-top:8px;font-size:14.5px}
+
+/* 演示区 */
+.stages{display:grid;grid-template-columns:1fr;gap:16px;margin-top:22px}
+.stages.compare{grid-template-columns:1fr 1fr} /* 【对比演示时把外层 div 加 class="compare"，并启用第二个 stage】 */
+.stage{position:relative;height:220px;background:linear-gradient(180deg,#fafbfd,#f2f4f8);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.stage-label{position:absolute;top:10px;left:12px;font-size:11.5px;color:var(--faint);z-index:2}
+
+.meta{display:flex;gap:8px;align-items:center;margin-top:16px;font-size:12.5px;color:var(--sub);flex-wrap:wrap}
+.tag{background:var(--brand-soft);color:var(--brand);border-radius:6px;padding:2px 9px;font-weight:600}
+.replay{margin-left:auto;background:transparent;border:1px solid var(--line);color:var(--sub);font-size:12.5px;border-radius:8px;padding:4px 12px;cursor:pointer}
+.replay:hover{border-color:var(--brand);color:var(--brand)}
+
+.prompt{margin-top:14px;background:#0f1220;border-radius:10px;padding:12px 13px;display:flex;gap:10px;align-items:flex-start}
+.prompt code{flex:1;color:#c6cbd8;font-size:12px;line-height:1.6;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
+.copy{flex-shrink:0;background:#232840;color:#aab1c7;border:none;border-radius:7px;font-size:11.5px;padding:5px 10px;cursor:pointer}
+.copy:hover{color:#fff}
+.copy.done{background:#16a34a;color:#fff}
+
+.note{margin-top:18px;font-size:13px;color:var(--sub);border-left:3px solid var(--line);padding-left:12px}
+
+/* =========================
+   【填】演示区动画样式写在这里
+   例：悬浮卡片上浮
+   .demo-el{transition:transform .2s var(--ease-out)}
+   .demo-el:hover{transform:translateY(-4px)}
+   ========================= */
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>【填】中文词条名<span class="en">【填】English Name</span></h1>
+  <p class="desc">【填】一句话说明：它长什么样、什么时候用。不超过 30 字，用白话。</p>
+
+  <div class="stages"><!-- 对比演示时改为 class="stages compare" -->
+    <div class="stage" id="stage1">
+      <span class="stage-label">【填】操作提示，如「把鼠标放上来」</span>
+      <!-- 【填】演示元素写在这里 -->
+      <div style="width:150px;height:80px;border-radius:12px;background:#dfe3ec;display:flex;align-items:center;justify-content:center;color:#8b91a3;font-size:13px" class="demo-el">
+        【填】演示元素
+      </div>
+    </div>
+    <!-- 对比演示时启用：
+    <div class="stage" id="stage2">
+      <span class="stage-label">方案 B</span>
+      ...第二种方案的元素...
+    </div>
+    -->
+  </div>
+
+  <div class="meta">
+    <span class="tag">【填】时长，如 0.25s</span>
+    <span class="tag">【填】曲线，如 ease-out</span>
+    <button class="replay" id="replay">重播</button>
+  </div>
+
+  <div class="prompt">
+    <code>【填】可直接复制给 AI 的话术，含触发时机 / 对象 / 变化 / 时长缓动 / 收尾状态。</code>
+    <button class="copy">复制</button>
+  </div>
+
+  <p class="note">【填】一句话提醒：这个效果最常见的错法是什么，或者它不适合的场景。没有就删掉这行。</p>
+
+</div>
+
+<script>
+/* 重播：移除动画类 → 强制 reflow → 加回。
+   若动画由 class 触发，把类名填进下面的 animClass。 */
+const animClass = 'demo-el-anim'; // 【填】改成实际触发动画的类名；常驻动画（如转圈）可删除重播按钮
+const el = document.querySelector('.demo-el');
+document.getElementById('replay').addEventListener('click', () => {
+  el.classList.remove(animClass);
+  void el.offsetWidth;
+  el.classList.add(animClass);
+});
+
+document.querySelector('.copy').addEventListener('click', function(){
+  const code = this.parentElement.querySelector('code').textContent;
+  navigator.clipboard.writeText(code).then(()=>{
+    this.textContent='已复制'; this.classList.add('done');
+    setTimeout(()=>{this.textContent='复制';this.classList.remove('done');},1400);
+  });
+});
+</script>
+</body>
+</html>

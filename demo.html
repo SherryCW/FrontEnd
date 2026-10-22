@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前端动效演示 — 35 个能动的词条</title>
+<style>
+:root{
+  --ink:#1a1d26; --sub:#5c6270; --faint:#9aa0ad;
+  --line:#e6e8ee; --bg:#f6f7fa; --card:#ffffff;
+  --brand:#4f46e5; --brand-soft:#eef0ff;
+  --ok:#16a34a; --bad:#dc2626;
+  --r:14px;
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-drawer:cubic-bezier(.32,.72,0,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",Roboto,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;padding-bottom:80px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+header{padding:52px 0 8px}
+header h1{font-size:30px;letter-spacing:-.02em}
+header .lede{color:var(--sub);margin-top:10px;max-width:640px}
+header .lede b{color:var(--ink)}
+.rules{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.rule{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:13.5px;color:var(--sub)}
+.rule b{color:var(--brand)}
+
+nav.toc{position:sticky;top:0;z-index:50;background:rgba(246,247,250,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-top:26px;padding:10px 0}
+nav.toc .wrap{display:flex;gap:6px;flex-wrap:wrap}
+nav.toc a{text-decoration:none;color:var(--sub);font-size:13px;padding:5px 11px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+nav.toc a:hover{color:var(--brand);background:var(--brand-soft)}
+
+section.group{padding-top:46px}
+.group>h2{font-size:21px;letter-spacing:-.01em}
+.group>.gdesc{color:var(--sub);font-size:14px;margin-top:4px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px;margin-top:18px}
+
+.demo-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px}
+.demo-card h3{font-size:15.5px}
+.demo-card h3 .en{color:var(--faint);font-weight:500;font-size:12.5px;margin-left:6px}
+.demo-card .desc{font-size:13px;color:var(--sub);margin-top:2px}
+.demo-card .warn{font-size:12px;color:var(--bad);margin-top:6px}
+.stage{position:relative;height:180px;background:linear-gradient(180deg,#fafbfd,#f2f4f8);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.stage.tall{height:220px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--sub)}
+.tag{background:var(--brand-soft);color:var(--brand);border-radius:6px;padding:2px 8px;font-weight:600}
+.replay{margin-left:auto;background:transparent;border:1px solid var(--line);color:var(--sub);font-size:12px;border-radius:7px;padding:3px 10px;cursor:pointer}
+.replay:hover{border-color:var(--brand);color:var(--brand)}
+.prompt{background:#0f1220;border-radius:9px;padding:9px 10px;display:flex;gap:8px;align-items:flex-start}
+.prompt code{flex:1;color:#c6cbd8;font-size:11.5px;line-height:1.55;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
+.copy{flex-shrink:0;background:#232840;color:#aab1c7;border:none;border-radius:6px;font-size:11px;padding:4px 9px;cursor:pointer}
+.copy:hover{color:#fff}
+.copy.done{background:var(--ok);color:#fff}
+
+/* ---------- 通用动画元素 ---------- */
+.block{width:130px;height:74px;border-radius:10px;background:#dfe3ec;display:flex;align-items:center;justify-content:center;color:#8b91a3;font-size:12px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes blurIn{from{opacity:0;filter:blur(14px)}to{opacity:1;filter:blur(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.play-fade{animation:fadeIn .4s var(--ease-out) both}
+.play-up{animation:fadeUp .45s var(--ease-out) both}
+.play-blur{animation:blurIn .7s var(--ease-out) both}
+
+/* stagger */
+.stag-col{display:flex;flex-direction:column;gap:9px}
+.stag-item{width:190px;height:26px;border-radius:7px;background:#dfe3ec;opacity:0}
+.stag-play .stag-item{animation:fadeUp .4s var(--ease-out) both}
+.stag-play .stag-item:nth-child(1){animation-delay:0s}
+.stag-play .stag-item:nth-child(2){animation-delay:.08s}
+.stag-play .stag-item:nth-child(3){animation-delay:.16s}
+.stag-play .stag-item:nth-child(4){animation-delay:.24s}
+
+/* skeleton */
+.sk-col{width:210px;display:flex;flex-direction:column;gap:10px}
+.sk-row{display:flex;gap:9px;align-items:center}
+.sk-av{width:30px;height:30px;border-radius:50%;flex-shrink:0}
+.sk-line{height:11px;border-radius:5px;flex:1}
+@keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
+.sk-av,.sk-line{background:#dde1ea;animation:breathe 1.4s ease-in-out infinite}
+.sk-real{display:none;flex-direction:column;gap:9px;width:210px}
+.sk-col.done .sk-real{display:flex;animation:fadeIn .25s var(--ease-out)}
+.sk-col.done .sk-fake{display:none}
+.sk-real .avatar{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.sk-real .lines{flex:1}
+.sk-real .l1{font-size:13px}
+.sk-real .l2{font-size:11.5px;color:var(--faint)}
+
+/* progress */
+.pbar-track{width:200px;height:8px;background:#e2e5ee;border-radius:99px;overflow:hidden}
+.pbar-fill{height:100%;width:0;background:var(--brand);border-radius:99px}
+.pbar-go .pbar-fill{animation:pfill 1.4s var(--ease-out) forwards}
+@keyframes pfill{to{width:100%}}
+
+/* press */
+.press-btn{background:var(--brand);color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:14px;cursor:pointer;transition:transform .12s var(--ease-out);user-select:none;-webkit-user-select:none}
+.press-btn:active{transform:scale(.96)}
+
+/* ripple */
+.ripple-btn{position:relative;overflow:hidden;background:#232840;color:#fff;border:none;border-radius:10px;padding:11px 26px;font-size:14px;cursor:pointer;user-select:none}
+.ripple-wave{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .55s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(3.2);opacity:0}}
+
+/* toggle */
+.tgl{position:relative;width:52px;height:30px;cursor:pointer}
+.tgl input{position:absolute;opacity:0;inset:0;cursor:pointer;z-index:2}
+.tgl .rail{position:absolute;inset:0;background:#cdd2df;border-radius:99px;transition:background .16s var(--ease-out)}
+.tgl .dot{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .16s var(--ease-out)}
+.tgl input:checked ~ .rail{background:var(--ok)}
+.tgl input:checked ~ .dot{transform:translateX(22px)}
+
+/* like */
+.like{background:none;border:none;cursor:pointer;font-size:34px;line-height:1;user-select:none;-webkit-user-select:none;transition:transform .1s}
+.like.on{animation:likepop .45s var(--ease-out)}
+.like.on svg{fill:#e0245e;stroke:#e0245e}
+@keyframes likepop{0%{transform:scale(.6)}55%{transform:scale(1.35)}100%{transform:scale(1)}}
+
+/* overlay demos（modal / sheet / drawer / toast） */
+.ov-stage{position:absolute;inset:0}
+.ov-mask{position:absolute;inset:0;background:rgba(15,18,32,.45);opacity:0;pointer-events:none;transition:opacity .2s var(--ease-out)}
+.ov-stage.open .ov-mask{opacity:1;pointer-events:auto}
+.ov-open-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.modal-box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);opacity:0;width:72%;background:#fff;border-radius:12px;padding:16px;transition:all .25s var(--ease-out);pointer-events:none}
+.ov-stage.open .modal-box{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+.modal-box h4{font-size:14px}
+.modal-box p{font-size:12px;color:var(--sub);margin-top:5px}
+.modal-box .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:13px}
+.btn-sm{border:none;border-radius:8px;padding:6px 14px;font-size:12.5px;cursor:pointer}
+.btn-ghost{background:#eef0f5;color:var(--sub)}
+.btn-main{background:var(--brand);color:#fff}
+
+.sheet{position:absolute;left:0;right:0;bottom:0;height:58%;background:#fff;border-radius:14px 14px 0 0;transform:translateY(105%);transition:transform .3s var(--ease-drawer);pointer-events:none;padding:14px 16px}
+.ov-stage.open .sheet{transform:none;pointer-events:auto}
+.sheet .grab{width:36px;height:4px;border-radius:99px;background:#d6dae4;margin:0 auto 10px}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:56%;background:#fff;transform:translateX(105%);transition:transform .3s var(--ease-drawer);pointer-events:none;padding:16px;box-shadow:-8px 0 24px rgba(0,0,0,.08)}
+.ov-stage.open .drawer{transform:none;pointer-events:auto}
+
+.tip-wrap{position:relative;display:inline-block}
+.tip-bubble{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translate(-50%,4px);background:#232840;color:#fff;font-size:11.5px;border-radius:7px;padding:5px 10px;white-space:nowrap;opacity:0;pointer-events:none;transition:all .15s var(--ease-out)}
+.tip-wrap:hover .tip-bubble{opacity:1;transform:translate(-50%,0)}
+.tip-bubble::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#232840}
+
+.dd-wrap{position:relative}
+.dd-menu{position:absolute;top:calc(100% + 6px);left:0;width:150px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(20,24,40,.1);padding:5px;opacity:0;transform:translateY(-4px);pointer-events:none;transition:all .15s var(--ease-out)}
+.dd-wrap.open .dd-menu{opacity:1;transform:none;pointer-events:auto}
+.dd-menu button{display:block;width:100%;text-align:left;background:none;border:none;font-size:12.5px;padding:7px 10px;border-radius:7px;cursor:pointer;color:var(--ink)}
+.dd-menu button:hover{background:var(--brand-soft);color:var(--brand)}
+
+.toast-host{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:8px;z-index:5}
+.toast{background:#232840;color:#fff;font-size:12px;border-radius:9px;padding:9px 13px;box-shadow:0 6px 18px rgba(0,0,0,.18);transform:translateX(24px);opacity:0;transition:all .2s var(--ease-out)}
+.toast.in{transform:none;opacity:1}
+
+/* accordion */
+.ac-item{width:88%;border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+.ac-item+.ac-item{margin-top:8px}
+.ac-head{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:none;padding:10px 13px;font-size:13px;cursor:pointer;color:var(--ink)}
+.ac-head .chev{transition:transform .25s var(--ease-out);color:var(--faint);font-size:11px}
+.ac-item.open .chev{transform:rotate(180deg)}
+.ac-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s var(--ease-out)}
+.ac-item.open .ac-body{grid-template-rows:1fr}
+.ac-body>div{overflow:hidden}
+.ac-body p{font-size:12px;color:var(--sub);padding:0 13px 11px}
+
+/* tabs */
+.tabs{width:88%}
+.tab-row{display:flex;gap:4px;border-bottom:2px solid var(--line);position:relative}
+.tab-row button{background:none;border:none;font-size:13px;color:var(--sub);padding:8px 14px;cursor:pointer;transition:color .15s}
+.tab-row button.on{color:var(--brand);font-weight:600}
+.tab-ind{position:absolute;bottom:-2px;height:2px;background:var(--brand);transition:all .2s var(--ease-out)}
+.tab-panes{padding:12px 2px;font-size:12.5px;color:var(--sub);min-height:58px}
+
+/* drag */
+.drag-col{display:flex;flex-direction:column;gap:7px;width:200px}
+.drag-item{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:12.5px;cursor:grab;transition:box-shadow .15s,opacity .15s}
+.drag-item:active{cursor:grabbing}
+.drag-item.dragging{opacity:.4}
+.drag-item.over{box-shadow:0 0 0 2px var(--brand)}
+.drag-item .h{color:#c3c8d4;letter-spacing:2px}
+
+/* FLIP list */
+.flip-col{width:88%;display:flex;flex-direction:column;gap:7px}
+.flip-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:12.5px}
+.flip-row .x{margin-left:auto;background:none;border:none;color:var(--faint);font-size:14px;cursor:pointer;padding:2px 6px;border-radius:6px}
+.flip-row .x:hover{color:var(--bad);background:#fdecec}
+.flip-row.removing{animation:fadeOut .15s ease-out forwards}
+@keyframes fadeOut{to{opacity:0;transform:scale(.96)}}
+
+/* pull to refresh */
+.ptr-box{width:82%;height:150px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
+.ptr-inner{height:100%;display:flex;flex-direction:column;transition:transform .3s var(--ease-out)}
+.ptr-hint{height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;color:var(--faint);gap:7px}
+.ptr-hint .mini-spin{width:13px;height:13px;border:2px solid #d5d9e4;border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;display:none}
+.ptr-hint.loading .mini-spin{display:block}
+.ptr-hint.loading .ptr-arrow{display:none}
+.ptr-content{flex:1;padding:12px 14px;border-top:1px dashed var(--line);font-size:12px;color:var(--sub)}
+.ptr-arrow{transition:transform .2s}
+
+/* form */
+.f-label{font-size:12px;color:var(--sub);display:block;margin-bottom:5px}
+.f-input{width:190px;padding:8px 11px;font-size:13px;border:1.5px solid #d6dae4;border-radius:9px;outline:none;transition:border-color .12s var(--ease-out),box-shadow .12s var(--ease-out);background:#fff}
+.f-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.f-err{font-size:11.5px;color:var(--bad);margin-top:6px;min-height:16px;opacity:0;transition:opacity .2s}
+.f-err.show{opacity:1}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.shake{animation:shake .3s ease-in-out}
+.shake-box{width:200px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}
+
+/* scroll demos */
+.scroll-stage{position:absolute;inset:0;display:flex;flex-direction:column}
+.s-nav{height:38px;flex-shrink:0;display:flex;align-items:center;padding:0 14px;gap:14px;font-size:12px;color:var(--sub);background:transparent;transition:background .2s,box-shadow .2s;position:relative;z-index:3}
+.s-nav b{color:var(--ink);font-size:12.5px}
+.s-nav.stuck{background:rgba(255,255,255,.94);box-shadow:0 2px 10px rgba(20,24,40,.08)}
+.s-scroll{flex:1;overflow-y:auto;position:relative}
+.s-block{height:110px;margin:10px 14px;border-radius:10px;background:#dfe3ec;display:flex;align-items:center;justify-content:center;color:#8b91a3;font-size:12px;opacity:0;transform:translateY(20px);transition:opacity .5s var(--ease-out),transform .5s var(--ease-out)}
+.s-block.vis{opacity:1;transform:none}
+.backtop{position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:none;background:var(--brand);color:#fff;font-size:15px;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:all .2s var(--ease-out);z-index:4}
+.backtop.show{opacity:1;pointer-events:auto;transform:none}
+
+/* count up */
+.cnt{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.cnt small{font-size:14px;color:var(--faint);font-weight:500}
+
+/* ---------- 新增 6 词条 ---------- */
+/* 悬停上浮 */
+.hover-card{width:170px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;cursor:default;transition:transform .2s var(--ease-out),box-shadow .2s var(--ease-out)}
+.hover-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(20,24,40,.12)}
+.hover-card .h-title{font-size:13px;font-weight:600}
+.hover-card .h-sub{font-size:11.5px;color:var(--faint);margin-top:4px}
+/* 图片放大 */
+.img-zoom{width:180px;height:110px;border-radius:10px;overflow:hidden;cursor:default}
+.img-zoom .img-in{height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#c7cdf3,#9aa7e8);color:#fff;font-size:12px;transition:transform .3s var(--ease-out)}
+.img-zoom:hover .img-in{transform:scale(1.06)}
+/* 打字机 */
+.tw{font-size:19px;font-weight:600;letter-spacing:.01em}
+.tw::after{content:"|";color:var(--brand);margin-left:2px;animation:caret .9s step-end infinite}
+@keyframes caret{0%,100%{opacity:1}50%{opacity:0}}
+/* 滚动进度条 */
+.sprog{position:absolute;top:0;left:0;height:3px;width:0;background:var(--brand);z-index:5;border-radius:0 2px 2px 0}
+/* 轮播 */
+.car-wrap{width:88%;position:relative}
+.car-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:10px}
+.car-track::-webkit-scrollbar{display:none}
+.car-slide{flex:0 0 72%;height:120px;scroll-snap-align:center;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px}
+.car-slide:nth-child(1){background:linear-gradient(135deg,#6d7ae0,#4f46e5)}
+.car-slide:nth-child(2){background:linear-gradient(135deg,#38bdf8,#0ea5e9)}
+.car-slide:nth-child(3){background:linear-gradient(135deg,#f59e0b,#f97316)}
+.car-nav{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;font-size:13px;color:var(--ink);display:flex;align-items:center;justify-content:center}
+.car-nav.l{left:-8px}.car-nav.r{right:-8px}
+/* 暗黑模式切换 */
+.dark-demo{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#fff;transition:background .2s var(--ease-out)}
+.dark-demo.dark{background:#171a23}
+.dark-demo .dm-title{font-size:15px;font-weight:600;color:var(--ink);transition:color .2s var(--ease-out)}
+.dark-demo.dark .dm-title{color:#eef0f7}
+.dark-demo .dm-sub{font-size:12px;color:var(--sub);transition:color .2s var(--ease-out)}
+.dark-demo.dark .dm-sub{color:#8b91a3}
+
+footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);color:var(--sub);font-size:13.5px}
+footer .fnote{margin-top:14px;font-size:12px;color:var(--faint)}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <h1>前端动效演示 · 35 个能动的词条</h1>
+  <p class="lede">每个卡片的右边都是<b>真的会动的演示</b>——悬停的真能悬停，弹窗的真能弹，骨架屏能看到它怎么变成真内容。看到喜欢的，点「复制」拿到那句能直接发给 AI 的话。</p>
+  <div class="rules">
+    <span class="rule">小东西 <b>0.15s</b></span>
+    <span class="rule">卡片弹窗 <b>0.25s</b></span>
+    <span class="rule">整页 <b>0.35s</b></span>
+    <span class="rule">曲线一律 <b>ease-out</b></span>
+    <span class="rule">一屏只让<b>一个</b>东西动</span>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#g1">A. 页面打开</a><a href="#g2">B. 要等</a><a href="#g3">C. 点一下</a><a href="#g4">D. 弹出东西</a><a href="#g5">E. 收起展开</a><a href="#g6">F. 列表在动</a><a href="#g7">G. 表单</a><a href="#g8">H. 整页滚动</a>
+</div></nav>
+
+<main class="wrap">
+
+<!-- ============ A ============ -->
+<section class="group" id="g1">
+  <h2>A. 页面刚打开，东西一个个冒出来</h2>
+  <p class="gdesc">进场动画的目标只有一个：让第一眼不生硬。四种常用写法，从最安全到最有格调。</p>
+  <div class="grid">
+
+    <div class="demo-card">
+      <h3>淡入<span class="en">Fade In</span></h3>
+      <p class="desc">整块内容直接出现在屏幕上。最基础、最不会做错，不知道选什么就用它。</p>
+      <div class="stage"><div class="block play-fade" id="a1t">内容出现</div></div>
+      <div class="meta"><span class="tag">0.4s</span><span class="tag">ease-out</span><button class="replay" data-rp="a1">重播</button></div>
+      <div class="prompt"><code>页面加载后，卡片从透明淡入显示，时长0.4 秒，先快后慢（ease-out）。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>上浮入场<span class="en">Fade Up</span></h3>
+      <p class="desc">从下方轻轻冒出来，比纯淡入多一点登场感。落地页最常用。</p>
+      <div class="stage"><div class="block play-up" id="a2t">从下往上</div></div>
+      <div class="meta"><span class="tag">0.45s</span><span class="tag">24px</span><button class="replay" data-rp="a2">重播</button></div>
+      <div class="prompt"><code>每个区块出现时，从下方24 像素处向上滑入并同时淡入，时长0.5 秒，只播放一次。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>逐条入场<span class="en">Stagger</span></h3>
+      <p class="desc">一排卡片依次出来，不要一起蹦。间隔 0.08 秒是安全值，拉大到 0.15 以上就显卡。</p>
+      <div class="stage"><div class="stag-col" id="a3t"><div class="stag-item"></div><div class="stag-item"></div><div class="stag-item"></div><div class="stag-item"></div></div></div>
+      <div class="meta"><span class="tag">0.4s</span><span class="tag">间隔 0.08s</span><button class="replay" data-rp="a3">重播</button></div>
+      <div class="prompt"><code>列表项依次入场，每一项比前一项晚0.08 秒，从下方淡入上浮。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>模糊入场<span class="en">Blur In</span></h3>
+      <p class="desc">由虚到实，比淡入更有焦点感。只适合大标题，别用在正文。</p>
+      <div class="stage"><div class="play-blur" id="a4t" style="font-size:26px;font-weight:700;letter-spacing:-.02em">由虚到实</div></div>
+      <div class="meta"><span class="tag">0.7s</span><span class="tag">blur 14→0</span><button class="replay" data-rp="a4">重播</button></div>
+      <div class="prompt"><code>首屏大标题加载后从模糊 14 像素转为清晰，同时淡入，时长 0.7 秒，先快后慢，结束后不再动。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>打字机效果<span class="en">Typewriter</span></h3>
+      <p class="desc">文字逐字出现，末尾光标一直闪。AI 对话界面的默认氛围感来源。</p>
+      <div class="stage"><div class="tw" id="a5t"></div></div>
+      <div class="meta"><span class="tag">80ms/字</span><span class="tag">光标常闪</span><button class="replay" data-rp="a5">重播</button></div>
+      <div class="prompt"><code>主标题像打字一样逐字出现，每个字间隔 80 毫秒，末尾竖线光标闪烁；打完后光标保持闪烁，不再动文字本身。</code><button class="copy">复制</button></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ B ============ -->
+<section class="group" id="g2">
+  <h2>B. 有东西要等</h2>
+  <p class="gdesc">等不到 1 秒就什么都别放；1–3 秒用骨架屏；只有真知道百分比才用进度条。</p>
+  <div class="grid">
+
+    <div class="demo-card">
+      <h3>骨架屏<span class="en">Skeleton Screen</span></h3>
+      <p class="desc">等的时候显示灰块占位，数据回来后替换成真内容。注意看它替换的那一下——没有跳动。</p>
+      <div class="stage">
+        <div class="sk-col" id="b1t">
+          <div class="sk-fake">
+            <div class="sk-row"><div class="sk-av"></div><div class="sk-line" style="max-width:110px"></div></div>
+            <div class="sk-row"><div class="sk-av"></div><div class="sk-line"></div></div>
+            <div class="sk-row"><div class="sk-av"></div><div class="sk-line" style="max-width:80px"></div></div>
+          </div>
+          <div class="sk-real">
+            <div class="sk-row"><div class="avatar">竹</div><div class="lines"><div class="l1">竹夜歌</div><div class="l2">刚刚发布了新文章</div></div></div>
+            <div class="sk-row"><div class="avatar">动</div><div class="lines"><div class="l1">动效手记</div><div class="l2">2 分钟前 · 已加载</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">呼吸 1.4s 周期</span><button class="replay" data-rp="b1">重播</button></div>
+      <div class="prompt"><code>数据返回前显示与真实布局一致的灰色骨架占位块，带缓慢的明暗呼吸动画，数据到达后交叉淡入替换为真实内容，容器高度保持不变。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>转圈<span class="en">Spinner</span></h3>
+      <p class="desc">它是默认答案，但只该用于 1 秒以内的等待。转超过 3 秒，人就开始怀疑页面坏了。</p>
+      <div class="stage">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="width:34px;height:34px;border:3px solid #dde1ec;border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite"></div>
+          <span style="font-size:11.5px;color:var(--faint)">只适合短等待</span>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">常驻</span></div>
+      <div class="prompt"><code>等待期间按钮内显示小转圈，其余区域保持原样不动。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>进度条<span class="en">Progress Bar</span></h3>
+      <p class="desc">上传、导出、安装这类知道进度的场景才用。假进度走到 90% 卡住，比没进度更让人想关掉。</p>
+      <div class="stage">
+        <div style="width:220px">
+          <div class="pbar-track"><div class="pbar-fill" id="b3f"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-top:7px"><span>上传中</span><span id="b3p">0%</span></div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">1.4s</span><button class="replay" data-rp="b3">重播</button></div>
+      <div class="prompt"><code>上传时显示真实进度条，随已传字节从 0 增长到 100%，到达后显示完成状态。</code><button class="copy">复制</button></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ C ============ -->
+<section class="group" id="g3">
+  <h2>C. 点一下、悬停，要有回应</h2>
+  <p class="gdesc">点下去或放上去的那一刻，用户在等一个确认。反馈要快（0.12–0.16 秒），而且动的是被碰的那个东西，不是整个页面。</p>
+  <div class="grid">
+
+    <div class="demo-card">
+      <h3>悬停上浮<span class="en">Hover Lift</span></h3>
+      <p class="desc">最经典的卡片效果：放上去浮起一点 + 影子加深。<b>手机没有悬停</b>——这个效果触屏上完全无效，要另配点击。<b>把鼠标放到卡片上。</b></p>
+      <div class="stage">
+        <div class="hover-card"><div class="h-title">每月只需 ¥99</div><div class="h-sub">悬停我，看卡片浮起</div></div>
+      </div>
+      <div class="meta"><span class="tag">0.2s</span><span class="tag">上移 4px</span></div>
+      <div class="prompt"><code>鼠标悬停卡片时，卡片向上移动 4 像素、阴影加深放大，过渡 0.25 秒，先快后慢（ease-out），鼠标移开恢复原状。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>图片放大<span class="en">Image Zoom</span></h3>
+      <p class="desc">图片轻轻放大一点。关键在容器要 overflow:hidden——否则图会冲出圆角。<b>放到图片上。</b></p>
+      <div class="stage">
+        <div class="img-zoom"><div class="img-in">悬停时图放大 1.06 倍</div></div>
+      </div>
+      <div class="meta"><span class="tag">0.3s</span><span class="tag">scale 1.06</span></div>
+      <div class="prompt"><code>鼠标悬停图片时，图片从 1 倍缓慢放大到 1.06 倍，时长 0.3 秒，先快后慢，移开后缓慢恢复；外层容器保持圆角裁切不变。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>按压回弹<span class="en">Button Press</span></h3>
+      <p class="desc">按下去缩一点，松开弹回来。两个数字照抄就行：缩到 0.96 倍，0.12 秒。<b>现在就能按着试试。</b></p>
+      <div class="stage"><button class="press-btn">按住我</button></div>
+      <div class="meta"><span class="tag">0.12s</span><span class="tag">scale 0.96</span></div>
+      <div class="prompt"><code>按钮按下时缩小到 0.96 倍，时长 120 毫秒，先快后慢；松开时恢复原大小。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>水波纹<span class="en">Ripple</span></h3>
+      <p class="desc">从手指位置散开一圈。安卓的标志性效果，桌面网页上用会显得土——慎重。<b>点按钮试试。</b></p>
+      <div class="stage"><button class="ripple-btn" id="c2b">点我</button></div>
+      <div class="meta"><span class="tag">0.55s</span></div>
+      <div class="prompt"><code>点击按钮时，以点击位置为圆心散开一圈半透明波纹，向外扩散并淡出，时长 0.55 秒。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>开关切换<span class="en">Toggle Switch</span></h3>
+      <p class="desc">圆点滑动 + 颜色变化，0.16 秒。滑动距离和圆点直径一致，才能显得「跟手」。<b>拨一下。</b></p>
+      <div class="stage">
+        <label class="tgl"><input type="checkbox" checked><span class="rail"></span><span class="dot"></span></label>
+      </div>
+      <div class="meta"><span class="tag">0.16s</span></div>
+      <div class="prompt"><code>开关拨动时，圆点平移到另一端并伴随轨道颜色变化，时长 160 毫秒，先快后慢。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>点赞弹跳<span class="en">Like Burst</span></h3>
+      <p class="desc">心心蹦一下：缩到 0.6 倍再弹过 1，落回原位。一次最多弹一下，弹两下就变玩具。<b>点心心。</b></p>
+      <div class="stage">
+        <button class="like" id="c4b" aria-label="点赞">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#b6bcc9" stroke-width="2"><path d="M12 21C7 16.5 3 13.2 3 9.1 3 6.3 5.2 4 8 4c1.6 0 3.1.8 4 2 0.9-1.2 2.4-2 4-2 2.8 0 5 2.3 5 5.1 0 4.1-4 7.4-9 11.9z"/></svg>
+        </button>
+      </div>
+      <div class="meta"><span class="tag">0.45s</span><span class="tag">过冲到 1.35</span></div>
+      <div class="prompt"><code>点击点赞时，心形图标从 0.6 倍弹跳放大到 1 倍并短暂过冲到 1.35 倍，同时变为红色，时长 0.45 秒，只弹一次。</code><button class="copy">复制</button></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ D ============ -->
+<section class="group" id="g4">
+  <h2>D. 要弹出个东西</h2>
+  <p class="gdesc">弹层最容易被漏掉的一件事：<b style="color:var(--bad)">怎么关</b>。只说了怎么打开，做出来就是「进得去出不来」。下面每个都能真的打开、真的关掉。</p>
+  <div class="grid">
+
+    <div class="demo-card">
+      <h3>模态框<span class="en">Modal</span></h3>
+      <p class="desc">中间弹框，背景变暗。注意三件事都齐了：有遮罩、从中间缩放出现、能点遮罩关。</p>
+      <div class="stage">
+        <div class="ov-stage" id="d1">
+          <div class="ov-mask" data-close="d1"></div>
+          <button class="btn-sm btn-main ov-open-btn" data-open="d1">打开弹窗</button>
+          <div class="modal-box">
+            <h4>确认删除？</h4>
+            <p>删除后无法恢复。这个文案短，是因为它本来就只需要一句话。</p>
+            <div class="acts"><button class="btn-sm btn-ghost" data-close="d1">取消</button><button class="btn-sm btn-main" data-close="d1">删除</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.25s</span><span class="tag">遮罩 0.2s</span></div>
+      <div class="prompt"><code>点击删除后弹出居中确认框：背景出现半透明遮罩，弹窗从 0.94 倍缩放淡入到 1 倍，时长 0.25 秒，先快后慢；可通过取消按钮、删除按钮或点击遮罩关闭，关闭时反向播放。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>底部抽屉<span class="en">Bottom Sheet</span></h3>
+      <p class="desc">从下面滑上来盖住半屏。手机上的首选；电脑上别用。<b>鼠标拖不动它顶部的横条——那是给手指的，电脑用弹窗。</b></p>
+      <div class="stage">
+        <div class="ov-stage" id="d2">
+          <div class="ov-mask" data-close="d2"></div>
+          <button class="btn-sm btn-main ov-open-btn" data-open="d2">打开抽屉</button>
+          <div class="sheet">
+            <div class="grab"></div>
+            <h4 style="font-size:14px">选择操作</h4>
+            <p style="font-size:12px;color:var(--sub);margin-top:6px">顶部那条小横条叫「抓握条」，暗示可以拖。手机上它真的能拖。</p>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.3s</span><span class="tag">抽屉曲线</span></div>
+      <div class="prompt"><code>点击后底部抽屉从屏幕下方滑入至 58% 高度，时长 0.3 秒，用先快后慢带轻微缓冲的抽屉曲线；带半透明遮罩，点击遮罩或抽屉内关闭按钮关闭，关闭时下滑退出。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>侧边抽屉<span class="en">Drawer</span></h3>
+      <p class="desc">从右边滑出来一整列，常放菜单和筛选。带一点点阴影，暗示它浮在页面上面。</p>
+      <div class="stage">
+        <div class="ov-stage" id="d3">
+          <div class="ov-mask" data-close="d3"></div>
+          <button class="btn-sm btn-main ov-open-btn" data-open="d3">打开侧栏</button>
+          <div class="drawer">
+            <h4 style="font-size:14px">筛选</h4>
+            <p style="font-size:12px;color:var(--sub);margin-top:6px">从右侧滑入。关闭方式和弹窗一样：点遮罩。</p>
+            <div style="margin-top:12px"><button class="btn-sm btn-ghost" data-close="d3">关闭</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.3s</span><span class="tag">320px 宽</span></div>
+      <div class="prompt"><code>点击后右侧抽屉从屏幕外滑入，宽度 320 像素，时长 0.3 秒，抽屉曲线；带遮罩，点击遮罩关闭。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>提示气泡<span class="en">Tooltip</span></h3>
+      <p class="desc">鼠标放上去出现小说明。0.15 秒就够——慢了会觉得迟钝。<b>把鼠标放到 ⓘ 上。</b></p>
+      <div class="stage">
+        <div class="tip-wrap">
+          <span style="width:26px;height:26px;border-radius:50%;background:#dfe3ec;color:#8b91a3;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:default">ⓘ</span>
+          <span class="tip-bubble">这是鼠标放上去才出现的说明</span>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.15s</span></div>
+      <div class="prompt"><code>鼠标悬停时，文字上方浮现深色气泡说明，从下方 4 像素处淡入，时长 0.15 秒；移开后淡出。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>下拉菜单<span class="en">Dropdown</span></h3>
+      <p class="desc">点按钮展开一排选项。0.15 秒，直接淡入下移，<b>不要加弹跳</b>——菜单不是玩具。<b>点按钮。</b></p>
+      <div class="stage">
+        <div class="dd-wrap" id="d5w">
+          <button class="btn-sm btn-ghost" data-dd="d5w">操作 ▾</button>
+          <div class="dd-menu">
+            <button>重命名</button><button>移动到…</button><button>复制链接</button><button style="color:var(--bad)">删除</button>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.15s</span><span class="tag">无弹跳</span></div>
+      <div class="prompt"><code>点击按钮后，下拉菜单从按钮下方 4 像素处淡入展开，时长 0.15 秒，无弹跳；点击菜单外任意位置或再次点击按钮关闭。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>轻提示<span class="en">Toast</span></h3>
+      <p class="desc">操作成功后右上角飘出一小条，2 秒自动消失。<b>别让用户点关闭</b>——他什么都没做错。<b>点按钮。</b></p>
+      <div class="stage">
+        <div class="ov-stage">
+          <button class="btn-sm btn-main ov-open-btn" id="d6b">保存</button>
+          <div class="toast-host" id="d6h"></div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">入 0.2s</span><span class="tag">2s 自动消失</span></div>
+      <div class="prompt"><code>保存成功后右上角弹出深色轻提示，从右侧 24 像素处滑入淡入，时长 0.2 秒，停留 2 秒后自动淡出，无需用户点击。</code><button class="copy">复制</button></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ E ============ -->
+<section class="group" id="g5">
+  <h2>E. 内容要收起或展开</h2>
+  <p class="gdesc">有限空间里收纳内容。展开的高度动画要用 grid-template-rows，别用写死的 max-height——那是「展开时先顿一下」的元凶。</p>
+  <div class="grid">
+
+    <div class="demo-card">
+      <h3>手风琴<span class="en">Accordion</span></h3>
+      <p class="desc">点标题展开答案，再点收起。箭头同时转 180 度。<b>点第一行试试。</b></p>
+      <div class="stage" style="flex-direction:column;justify-content:center;gap:8px">
+        <div class="ac-item open">
+          <button class="ac-head">什么是收尾状态？<span class="chev">▾</span></button>
+          <div class="ac-body"><div><p>动完之后它是什么样：停原位、恢复、消失、还是只播一次。写提示词时最容易漏的一格。</p></div></div>
+        </div>
+        <div class="ac-item">
+          <button class="ac-head">为什么不能用 max-height？<span class="chev">▾</span></button>
+          <div class="ac-body"><div><p>写死的高度和真实内容对不上，展开时会先空一段再顿一下。grid 的 0fr→1fr 永远贴着内容。</p></div></div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.25s</span><span class="tag">0fr→1fr</span></div>
+      <div class="prompt"><code>点击标题时，下方内容区域高度从 0 平滑展开到实际高度，时长 0.25 秒，先快后慢；箭头图标同时旋转 180 度；再次点击反向收起。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>标签页<span class="en">Tabs</span></h3>
+      <p class="desc">下划线从一个标签<b>滑</b>到另一个，而不是消失再出现——这个连续性就是「顺」的来源。<b>点第二个标签。</b></p>
+      <div class="stage">
+        <div class="tabs" id="e2t">
+          <div class="tab-row">
+            <button class="on">全部</button><button>进行中</button><button>已完成</button>
+            <span class="tab-ind"></span>
+          </div>
+          <div class="tab-panes">三个状态的工单都在这里，按更新时间排序。</div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.2s</span></div>
+      <div class="prompt"><code>点击标签时，底部指示条平滑滑动到当前标签下方，时长 0.2 秒，先快后慢；内容区同时交叉淡入切换，不使用滑动。</code><button class="copy">复制</button></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ F ============ -->
+<section class="group" id="g6">
+  <h2>F. 列表里有东西在动</h2>
+  <p class="gdesc">「看着廉价」的重灾区。删一行想让其余的补位、拖一张卡想换顺序——都有正确做法，也都有最常见的错误做法。</p>
+  <div class="grid">
+
+    <div class="demo-card">
+      <h3>拖拽排序<span class="en">Drag to Reorder</span></h3>
+      <p class="desc">拖来拖去换顺序。AI 最容易漏的是「松手后插到哪」，话术里必须写清。<b>拖下面任何一张。</b></p>
+      <div class="stage" style="align-items:center">
+        <div class="drag-col" id="f1c">
+          <div class="drag-item" draggable="true"><span class="h">⠿</span>写周报<span style="margin-left:auto;color:var(--faint);font-size:11px">拖我</span></div>
+          <div class="drag-item" draggable="true"><span class="h">⠿</span>回邮件</div>
+          <div class="drag-item" draggable="true"><span class="h">⠿</span>改 Bug-1024</div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">被拖项半透明</span><span class="tag">目标项描边</span></div>
+      <div class="prompt"><code>列表项可拖拽排序：拖动时原位置半透明，其他项实时让位并显示插入位置描边；松手后被拖项落到当前位置，其余项平滑补位，时长 0.2 秒。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>删除补位<span class="en">List Remove · FLIP</span></h3>
+      <p class="desc">删掉一行，下面的<b>平滑滑上来</b>。这是「廉价感」最高频的来源——错误做法是让浏览器直接跳位。<b>点 × 删一行，删完点重播恢复。</b></p>
+      <div class="stage" style="align-items:center">
+        <div class="flip-col" id="f2c">
+          <div class="flip-row"><b style="font-size:11px;color:#fff;background:var(--brand);border-radius:5px;padding:1px 6px">1</b>需求评审 <button class="x">✕</button></div>
+          <div class="flip-row"><b style="font-size:11px;color:#fff;background:var(--brand);border-radius:5px;padding:1px 6px">2</b>视觉走查 <button class="x">✕</button></div>
+          <div class="flip-row"><b style="font-size:11px;color:#fff;background:var(--brand);border-radius:5px;padding:1px 6px">3</b>回归测试 <button class="x">✕</button></div>
+          <div class="flip-row"><b style="font-size:11px;color:#fff;background:var(--brand);border-radius:5px;padding:1px 6px">4</b>发布上线 <button class="x">✕</button></div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">FLIP 0.2s</span><button class="replay" data-rp="f2">恢复</button></div>
+      <div class="prompt"><code>删除列表项时，该项淡出缩小消失，其余项用 FLIP 技术平滑上移补位，时长 0.2 秒，先快后慢；不要使用 top 或 margin 动画。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>下拉刷新<span class="en">Pull to Refresh</span></h3>
+      <p class="desc">手机上的经典动作。要点：拉过阈值才触发，拉不够自动弹回。<b>按住往下拖，松手。</b></p>
+      <div class="stage">
+        <div class="ptr-box" id="f3b">
+          <div class="ptr-inner" id="f3i">
+            <div class="ptr-hint" id="f3h"><span class="ptr-arrow" id="f3a">↓</span><span class="mini-spin"></span><span id="f3txt">下拉刷新</span></div>
+            <div class="ptr-content">内容区域<br><span style="color:var(--faint);font-size:11px">按住这里往下拖 →</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">阈值 44px</span><span class="tag">回弹 0.3s</span></div>
+      <div class="prompt"><code>列表顶部支持下拉刷新：按住下拉时顶部露出提示区域，拉到 44 像素时提示变为「松手刷新」，不足时松手自动回弹；松手后显示转圈 1 秒并加载新内容。</code><button class="copy">复制</button></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ G ============ -->
+<section class="group" id="g7">
+  <h2>G. 填表单</h2>
+  <p class="gdesc">表单动效决定填写成功率。三条铁律：聚焦要有高亮；校验在<b>失焦时</b>做，不要边打字边报错；报错最多抖一次。</p>
+  <div class="grid">
+
+    <div class="demo-card">
+      <h3>聚焦高亮<span class="en">Focus Highlight</span></h3>
+      <p class="desc">点进输入框：边框变色 + 一圈浅色外圈，0.12 秒。这圈外圈同时就是无障碍的焦点指示。<b>点输入框。</b></p>
+      <div class="stage" style="flex-direction:column;align-items:flex-start;padding:24px">
+        <label class="f-label">手机号</label>
+        <input class="f-input" placeholder="点进来试试">
+      </div>
+      <div class="meta"><span class="tag">0.12s</span></div>
+      <div class="prompt"><code>输入框聚焦时边框变为主题色并显示 3 像素浅色外圈，时长 120 毫秒；失焦后恢复。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>失焦校验<span class="en">Inline Validation</span></h3>
+      <p class="desc">填错了，<b>点到别处时</b>才提示——边打字边报错会让人烦躁。<b>随便填几个数字，然后点别处。</b></p>
+      <div class="stage" style="flex-direction:column;align-items:flex-start;padding:20px">
+        <label class="f-label" style="width:190px">手机号 <span style="color:var(--faint)">（失焦时校验）</span></label>
+        <input class="f-input" id="g2i" placeholder="13800000000">
+        <div class="f-err" id="g2e" style="width:190px">格式不对：应该是 11 位数字</div>
+      </div>
+      <div class="meta"><span class="tag">失焦触发</span><span class="tag">红字淡入 0.2s</span></div>
+      <div class="prompt"><code>输入框在失去焦点时校验手机号格式：不合法则边框变红，下方淡入红色错误文案，时长 0.2 秒；输入合法后错误立即消失。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>错误抖动<span class="en">Shake</span></h3>
+      <p class="desc">提交出错时左右抖一下。<b>最多抖一次、3 个来回</b>——多抖显得在责怪用户。<b>点提交。</b></p>
+      <div class="stage" style="flex-direction:column;gap:10px">
+        <div class="shake-box" id="g3b">
+          <div style="font-size:12.5px;margin-bottom:8px">验证码</div>
+          <input class="f-input" style="width:100%" value="1 2 3 4 5">
+        </div>
+        <button class="btn-sm btn-main" id="g3s">提交</button>
+      </div>
+      <div class="meta"><span class="tag">0.3s</span><span class="tag">只抖一次</span></div>
+      <div class="prompt"><code>提交校验失败时，表单容器左右抖动 3 个来回（单侧 5 像素），时长 0.3 秒，只播放一次，同时错误文案淡入。</code><button class="copy">复制</button></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ H ============ -->
+<section class="group" id="g8">
+  <h2>H. 网页整体</h2>
+  <p class="gdesc">滚动相关的四个最常用件。下面两个演示框是<b>真的可以滚动</b>的——在里面滚一滚。</p>
+  <div class="grid">
+
+    <div class="demo-card">
+      <h3>滚动显现<span class="en">Scroll Reveal</span></h3>
+      <p class="desc">滚到某个位置才淡入。<b>最容易漏的是「只播放一次」</b>——漏了它，上下滚动会反复闪。<b>在框里往下滚。</b></p>
+      <div class="stage tall">
+        <div class="scroll-stage">
+          <div class="s-scroll" id="h1s">
+            <div style="height:30px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:11px">↓ 往下滚</div>
+            <div class="s-block">第一屏</div>
+            <div class="s-block">滚到这里我才出现</div>
+            <div class="s-block">我也是</div>
+            <div class="s-block">注意：往回滚<br>我不会重播（只播一次）</div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.5s</span><span class="tag">只播一次</span></div>
+      <div class="prompt"><code>每个版块在滚动进入视口约 80% 位置时淡入上浮 20 像素，时长 0.5 秒，先快后慢；动画只播放一次，不因回滚反复触发。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>吸顶导航<span class="en">Sticky Header</span></h3>
+      <p class="desc">滚过顶部后导航固定，同时背景变白、加阴影、文字变深——三件一起做，缺一件就飘。<b>在框里往下滚。</b></p>
+      <div class="stage tall">
+        <div class="scroll-stage">
+          <div class="s-scroll" id="h2s">
+            <div class="s-nav" id="h2n"><b>Demo 站</b><span>首页</span><span>产品</span><span>关于</span></div>
+            <div class="s-block vis">往下滚 ↓</div>
+            <div class="s-block vis">导航会吸附在顶部</div>
+            <div class="s-block vis">背景变白 + 阴影</div>
+            <div class="s-block vis">这就是「吸顶」</div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.2s</span></div>
+      <div class="prompt"><code>导航栏滚动超过页面顶部后固定在顶端，背景从透明过渡为白色并出现浅色阴影，文字同步变为深色，过渡时长 0.2 秒。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>回到顶部<span class="en">Back to Top</span></h3>
+      <p class="desc">滚过一屏才出现——没滚过就出现是在嘲笑用户。<b>滚下去，再点圆钮。</b></p>
+      <div class="stage tall">
+        <div class="scroll-stage">
+          <div class="s-scroll" id="h3s">
+            <div class="s-block vis">往下滚 ↓</div>
+            <div class="s-block vis">滚过一屏</div>
+            <div class="s-block vis">右下角会出现按钮</div>
+            <div class="s-block vis">点它平滑回顶</div>
+            <div class="s-block vis">到底了</div>
+          </div>
+          <button class="backtop" id="h3b">↑</button>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">出现 0.2s</span><span class="tag">回顶平滑</span></div>
+      <div class="prompt"><code>页面滚动超过一屏后，右下角淡入上浮出现圆形「回到顶部」按钮，时长 0.2 秒；点击后页面平滑滚动回顶部，途中按钮保持显示。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>数字滚动<span class="en">Count Up</span></h3>
+      <p class="desc">数字从 0 涨上去。1.2 秒，末尾减速，用等宽数字防止宽度乱跳。<b>滚进视口自动播。</b></p>
+      <div class="stage" style="flex-direction:column;gap:6px">
+        <div class="cnt"><span id="h4n">0</span><small> 位学习者</small></div>
+        <span style="font-size:11px;color:var(--faint)">注意末尾变慢的那一下——那是 ease-out</span>
+      </div>
+      <div class="meta"><span class="tag">1.2s</span><span class="tag">末尾减速</span><button class="replay" data-rp="h4">重播</button></div>
+      <div class="prompt"><code>统计数字滚动到可见区域后，从 0 递增到目标值，持续 1.2 秒，末尾减速（ease-out），使用等宽数字避免宽度跳动，只播放一次。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>滚动进度条<span class="en">Scroll Progress</span></h3>
+      <p class="desc">顶部一条 3 像素细线随滚动增长。告诉长文读者「还剩多少」。<b>在框里滚。</b></p>
+      <div class="stage tall">
+        <div class="scroll-stage">
+          <div class="s-scroll" id="h5s" style="position:relative">
+            <div class="sprog" id="h5p"></div>
+            <div class="s-block vis">顶部有条细线</div>
+            <div class="s-block vis">滚多少它长多少</div>
+            <div class="s-block vis">快滚完了</div>
+            <div class="s-block vis">到 100% 就到底</div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">跟随滚动</span></div>
+      <div class="prompt"><code>页面顶部固定一条 3 像素高的进度条，随滚动位置从左向右增长，使用主题色；页面回滚时同步缩短。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>轮播图<span class="en">Carousel</span></h3>
+      <p class="desc">横向滑动的一排卡片，松手自动吸附到最近一张。<b>左右拖，或点两个圆钮。</b></p>
+      <div class="stage">
+        <div class="car-wrap">
+          <div class="car-track" id="h6t">
+            <div class="car-slide">第一张 · 松手自动吸附</div>
+            <div class="car-slide">第二张</div>
+            <div class="car-slide">第三张</div>
+          </div>
+          <button class="car-nav l" data-car="-1">‹</button>
+          <button class="car-nav r" data-car="1">›</button>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">scroll-snap</span></div>
+      <div class="prompt"><code>卡片横向排布，容器支持滚动并启用吸附对齐；拖动或点击左右箭头切换，切换过程平滑，松手后自动吸附到最近一张卡片。</code><button class="copy">复制</button></div>
+    </div>
+
+    <div class="demo-card">
+      <h3>暗黑模式<span class="en">Dark Mode</span></h3>
+      <p class="desc">切主题时颜色平滑过渡，不是瞬间跳变。<b>点月亮。</b></p>
+      <div class="stage">
+        <div class="dark-demo" id="h7d">
+          <div class="dm-title">这是一块内容区域</div>
+          <div class="dm-sub">点下面按钮，背景与文字平滑切换</div>
+          <button class="btn-sm btn-ghost" id="h7b">🌙 切到深色</button>
+        </div>
+      </div>
+      <div class="meta"><span class="tag">0.2s</span><span class="tag">只过渡颜色</span></div>
+      <div class="prompt"><code>切换深色模式时，背景色与文字颜色过渡变化，时长 0.2 秒，先快后慢；不做整页淡入，不改变布局与尺寸。</code><button class="copy">复制</button></div>
+    </div>
+
+  </div>
+</section>
+  <p><b>三句口诀</b>：小东西 0.15 秒、卡片弹窗 0.25 秒、整页 0.35 秒，曲线一律 ease-out。写提示词必带「动完之后什么样」。一屏只让一个东西动。</p>
+  <p class="fnote">演示里的每个参数都和《缓动与时长参数表》一致——这页本身就是那张表的活标本。35 个词条覆盖新手 90% 的高频场景；全部 262 条见 reference/terminology.md。</p>
+</footer>
+
+</main>
+
+<script>
+/* ---------- 工具：重播 ---------- */
+document.querySelectorAll('.replay').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id = btn.dataset.rp;
+    if (id==='a1'){const t=document.getElementById('a1t');t.classList.remove('play-fade');void t.offsetWidth;t.classList.add('play-fade');}
+    if (id==='a2'){const t=document.getElementById('a2t');t.classList.remove('play-up');void t.offsetWidth;t.classList.add('play-up');}
+    if (id==='a3'){const t=document.getElementById('a3t');t.classList.remove('stag-play');void t.offsetWidth;t.classList.add('stag-play');}
+    if (id==='a4'){const t=document.getElementById('a4t');t.classList.remove('play-blur');void t.offsetWidth;t.classList.add('play-blur');}
+    if (id==='a5') typewriter();
+    if (id==='b1') skeleton();
+    if (id==='b3') progress();
+    if (id==='f2') resetFlip();
+    if (id==='h4') countUp();
+  });
+});
+
+/* ---------- A：进页面就演一次 ---------- */
+window.addEventListener('load',()=> setTimeout(()=>{
+  document.getElementById('a3t').classList.add('stag-play');
+},150));
+
+/* ---------- B1 骨架屏 ---------- */
+let skTimer;
+function skeleton(){
+  const t = document.getElementById('b1t');
+  clearTimeout(skTimer);
+  t.classList.remove('done');
+  skTimer = setTimeout(()=> t.classList.add('done'), 2200);
+}
+window.addEventListener('load',()=> setTimeout(skeleton, 400));
+
+/* ---------- B3 进度条 ---------- */
+let pgTimer;
+function progress(){
+  const fill = document.getElementById('b3f'), num = document.getElementById('b3p');
+  fill.parentElement.parentElement.classList.remove('pbar-go');
+  void fill.offsetWidth;
+  fill.parentElement.parentElement.classList.add('pbar-go');
+  clearInterval(pgTimer);
+  const t0 = performance.now();
+  pgTimer = setInterval(()=>{
+    const p = Math.min(1,(performance.now()-t0)/1400);
+    const eased = 1-Math.pow(1-p,3); // ease-out cubic
+    num.textContent = Math.round(eased*100)+'%';
+    if(p>=1) clearInterval(pgTimer);
+  },40);
+}
+window.addEventListener('load',()=> setTimeout(progress, 300));
+
+/* ---------- C2 水波纹 ---------- */
+document.getElementById('c2b').addEventListener('click',function(e){
+  const r = this.getBoundingClientRect();
+  const s = Math.max(r.width, r.height);
+  const w = document.createElement('span');
+  w.className='ripple-wave';
+  w.style.width=w.style.height=s+'px';
+  w.style.left=(e.clientX-r.left-s/2)+'px';
+  w.style.top=(e.clientY-r.top-s/2)+'px';
+  this.appendChild(w);
+  setTimeout(()=>w.remove(),600);
+});
+
+/* ---------- C4 点赞 ---------- */
+const likeBtn = document.getElementById('c4b');
+likeBtn.addEventListener('click',()=>{
+  likeBtn.classList.remove('on'); void likeBtn.offsetWidth; likeBtn.classList.add('on');
+});
+
+/* ---------- D：弹层开合 ---------- */
+document.addEventListener('click',e=>{
+  const open = e.target.closest('[data-open]');
+  if (open){ document.getElementById(open.dataset.open).classList.add('open'); }
+  const close = e.target.closest('[data-close]');
+  if (close){ document.getElementById(close.dataset.close).classList.remove('open'); }
+});
+/* dropdown */
+document.addEventListener('click',e=>{
+  const dd = e.target.closest('[data-dd]');
+  document.querySelectorAll('.dd-wrap.open').forEach(w=>{ if(!dd || w.id!==dd.dataset.dd) w.classList.remove('open'); });
+  if (dd) document.getElementById(dd.dataset.dd).classList.toggle('open');
+});
+/* toast */
+document.getElementById('d6b').addEventListener('click',()=>{
+  const host = document.getElementById('d6h');
+  const t = document.createElement('div');
+  t.className='toast'; t.textContent='已保存';
+  host.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('in')));
+  setTimeout(()=>{ t.classList.remove('in'); setTimeout(()=>t.remove(),250); },2000);
+});
+
+/* ---------- E1 手风琴 ---------- */
+document.querySelectorAll('.ac-head').forEach(h=>{
+  h.addEventListener('click',()=> h.parentElement.classList.toggle('open'));
+});
+
+/* ---------- E2 Tabs ---------- */
+(function(){
+  const row = document.querySelector('#e2t .tab-row');
+  const ind = row.querySelector('.tab-ind');
+  const panes = ['全部工单按更新时间排序，置顶的是今天要处理的。','进行中的有 3 张，最早的一张已经停了两天——去看看？','已完成归档保留 30 天，之后自动清理。'];
+  const pane = document.querySelector('#e2t .tab-panes');
+  function move(btn){ ind.style.left = btn.offsetLeft+'px'; ind.style.width = btn.offsetWidth+'px'; }
+  row.querySelectorAll('button').forEach((btn,i)=>{
+    btn.addEventListener('click',()=>{
+      row.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on'); move(btn);
+      pane.style.opacity=0;
+      setTimeout(()=>{ pane.textContent=panes[i]; pane.style.transition='opacity .15s'; pane.style.opacity=1; },120);
+    });
+  });
+  window.addEventListener('load',()=>move(row.querySelector('button.on')));
+})();
+
+/* ---------- F1 拖拽排序 ---------- */
+(function(){
+  const col = document.getElementById('f1c');
+  let dragEl=null;
+  col.querySelectorAll('.drag-item').forEach(it=>{
+    it.addEventListener('dragstart',()=>{ dragEl=it; setTimeout(()=>it.classList.add('dragging'),0); });
+    it.addEventListener('dragend',()=>{ it.classList.remove('dragging'); col.querySelectorAll('.drag-item').forEach(x=>x.classList.remove('over')); });
+    it.addEventListener('dragover',e=>{ e.preventDefault(); if(it!==dragEl) it.classList.add('over'); });
+    it.addEventListener('dragleave',()=> it.classList.remove('over'));
+    it.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(it!==dragEl){ col.insertBefore(dragEl, it); }
+    });
+  });
+})();
+
+/* ---------- F2 FLIP 删除 ---------- */
+const flipCol = document.getElementById('f2c');
+flipCol.addEventListener('click',e=>{
+  const x = e.target.closest('.x'); if(!x) return;
+  const row = x.parentElement;
+  if (flipCol.querySelectorAll('.flip-row').length<=1) return;
+  /* FLIP: First — 记录其余行位置 */
+  const rows = [...flipCol.querySelectorAll('.flip-row')].filter(r=>r!==row);
+  const first = new Map(rows.map(r=>[r, r.getBoundingClientRect().top]));
+  row.classList.add('removing');
+  setTimeout(()=>{
+    row.remove();
+    /* Last + Invert + Play */
+    rows.forEach(r=>{
+      const delta = first.get(r) - r.getBoundingClientRect().top;
+      if (!delta) return;
+      r.style.transform = `translateY(${delta}px)`;
+      r.style.transition = 'none';
+      requestAnimationFrame(()=>{
+        r.style.transition = 'transform .2s cubic-bezier(.22,1,.36,1)';
+        r.style.transform = '';
+      });
+    });
+  },150);
+});
+function resetFlip(){
+  flipCol.innerHTML = `
+  <div class="flip-row"><b style="font-size:11px;color:#fff;background:var(--brand);border-radius:5px;padding:1px 6px">1</b>需求评审 <button class="x">✕</button></div>
+  <div class="flip-row"><b style="font-size:11px;color:#fff;background:var(--brand);border-radius:5px;padding:1px 6px">2</b>视觉走查 <button class="x">✕</button></div>
+  <div class="flip-row"><b style="font-size:11px;color:#fff;background:var(--brand);border-radius:5px;padding:1px 6px">3</b>回归测试 <button class="x">✕</button></div>
+  <div class="flip-row"><b style="font-size:11px;color:#fff;background:var(--brand);border-radius:5px;padding:1px 6px">4</b>发布上线 <button class="x">✕</button></div>`;
+}
+
+/* ---------- F3 下拉刷新 ---------- */
+(function(){
+  const box=document.getElementById('f3b'), inner=document.getElementById('f3i'),
+        hint=document.getElementById('f3h'), txt=document.getElementById('f3txt'), arrow=document.getElementById('f3a');
+  const TH=44; let startY=null, dy=0, busy=false;
+  box.addEventListener('pointerdown',e=>{ if(busy) return; startY=e.clientY; inner.style.transition='none'; box.setPointerCapture(e.pointerId); });
+  box.addEventListener('pointermove',e=>{
+    if(startY===null||busy) return;
+    dy=Math.max(0,Math.min(80,e.clientY-startY));
+    inner.style.transform=`translateY(${dy}px)`;
+    arrow.style.transform = dy>TH?'rotate(180deg)':'';
+    txt.textContent = dy>TH?'松手刷新':'下拉刷新';
+  });
+  box.addEventListener('pointerup',()=>{
+    if(startY===null||busy) return; startY=null;
+    inner.style.transition='';
+    if(dy>TH){
+      busy=true; dy=TH; inner.style.transform='translateY(44px)';
+      hint.classList.add('loading'); txt.textContent='刷新中…';
+      setTimeout(()=>{
+        hint.classList.remove('loading'); txt.textContent='下拉刷新'; arrow.style.transform='';
+        inner.style.transform=''; busy=false; dy=0;
+      },1000);
+    } else { inner.style.transform=''; dy=0; }
+  });
+})();
+
+/* ---------- G2 失焦校验 ---------- */
+document.getElementById('g2i').addEventListener('blur',function(){
+  document.getElementById('g2e').classList.toggle('show', !/^1\d{10}$/.test(this.value.trim()));
+});
+
+/* ---------- G3 抖动 ---------- */
+document.getElementById('g3s').addEventListener('click',()=>{
+  const b=document.getElementById('g3b');
+  b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+});
+
+/* ---------- H1 滚动显现（只播一次） ---------- */
+(function(){
+  const sc=document.getElementById('h1s');
+  const io=new IntersectionObserver(es=>es.forEach(en=>{
+    if(en.isIntersecting){ en.target.classList.add('vis'); io.unobserve(en.target); }
+  }),{root:sc,threshold:.35});
+  sc.querySelectorAll('.s-block').forEach(b=>io.observe(b));
+})();
+
+/* ---------- H2 吸顶 ---------- */
+(function(){
+  const sc=document.getElementById('h2s'), nav=document.getElementById('h2n');
+  sc.addEventListener('scroll',()=> nav.classList.toggle('stuck', sc.scrollTop>10));
+})();
+
+/* ---------- H3 回到顶部 ---------- */
+(function(){
+  const sc=document.getElementById('h3s'), btn=document.getElementById('h3b');
+  sc.addEventListener('scroll',()=> btn.classList.toggle('show', sc.scrollTop>120));
+  btn.addEventListener('click',()=> sc.scrollTo({top:0,behavior:'smooth'}));
+})();
+
+/* ---------- H4 数字滚动 ---------- */
+let cntDone=false, cntTimer;
+function countUp(){
+  const el=document.getElementById('h4n'), target=26200, dur=1200;
+  clearInterval(cntTimer);
+  const t0=performance.now();
+  cntTimer=setInterval(()=>{
+    const p=Math.min(1,(performance.now()-t0)/dur);
+    const eased=1-Math.pow(1-p,3);
+    el.textContent=Math.round(eased*target).toLocaleString();
+    if(p>=1) clearInterval(cntTimer);
+  },30);
+}
+new IntersectionObserver((es,io)=>{
+  if(es[0].isIntersecting && !cntDone){ cntDone=true; countUp(); io.disconnect(); }
+},{threshold:.5}).observe(document.getElementById('h4n'));
+
+/* ---------- A5 打字机 ---------- */
+let twTimer;
+function typewriter(){
+  const el=document.getElementById('a5t'), text='把「高级一点」写成能验收的规格。';
+  clearInterval(twTimer); el.textContent=''; let i=0;
+  twTimer=setInterval(()=>{ el.textContent=text.slice(0,++i); if(i>=text.length) clearInterval(twTimer); },80);
+}
+window.addEventListener('load',()=> setTimeout(typewriter, 500));
+
+/* ---------- H5 滚动进度条 ---------- */
+(function(){
+  const sc=document.getElementById('h5s'), bar=document.getElementById('h5p');
+  sc.addEventListener('scroll',()=>{
+    const p=sc.scrollTop/(sc.scrollHeight-sc.clientHeight);
+    bar.style.width=(p*100)+'%';
+  });
+})();
+
+/* ---------- H6 轮播 ---------- */
+(function(){
+  const t=document.getElementById('h6t');
+  document.querySelectorAll('[data-car]').forEach(b=>{
+    b.addEventListener('click',()=> t.scrollBy({left:+b.dataset.car*t.clientWidth*.8, behavior:'smooth'}));
+  });
+})();
+
+/* ---------- H7 暗黑模式 ---------- */
+document.getElementById('h7b').addEventListener('click',function(){
+  const d=document.getElementById('h7d');
+  d.classList.toggle('dark');
+  this.textContent = d.classList.contains('dark') ? '☀️ 切到浅色' : '🌙 切到深色';
+});
+
+/* ---------- 复制 ---------- */document.querySelectorAll('.copy').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const text=btn.parentElement.querySelector('code').textContent;
+    (navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(
+      ()=>{ btn.textContent='已复制'; btn.classList.add('done'); setTimeout(()=>{btn.textContent='复制';btn.classList.remove('done');},1400); },
+      ()=>{ /* 降级：选中让用户手动 Cmd+C */
+        const r=document.createRange(); r.selectNodeContents(btn.parentElement.querySelector('code'));
+        const s=getSelection(); s.removeAllRanges(); s.addRange(r);
+        btn.textContent='已选中，Cmd+C'; setTimeout(()=>btn.textContent='复制',1800);
+      });
+  });
+});
+</script>
+</body>
+</html>

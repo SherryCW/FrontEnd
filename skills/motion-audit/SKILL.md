@@ -132,6 +132,8 @@ related_skills:
 | 「手机上点不动 / 得点两下」 | 效果只写了 hover，触屏没有替代触发 |
 | 「廉价、说不上哪怪」 | 一屏动的东西超过两个；或者根本不是动效问题，是排版 |
 
+**「改前 vs 改后」说不服时，给对比演示。** 用 `motion-term-lookup/reference/demo-template.html` 的对比模式（`.stages.compare`）：左边演他现在的写法，右边演改后的写法。亲眼看到「廉价」和「果断」的差别，比读十条诊断有效。参数与 `motion-param-calibrate/reference/easing-duration.md` 一致。**交付物有且只有这一个 HTML 文件。**
+
 ---
 
 **0. 先要材料。**
