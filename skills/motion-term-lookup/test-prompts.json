@@ -1,0 +1,80 @@
+{
+  "skill": "motion-term-lookup",
+  "version": "0.1.0",
+  "source_book": "Vibe Coding 前端交互效果术语手册 — 才聚智能（未署名）",
+  "darwin_compatible": true,
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "就是那种滚到那个位置才淡入出现的效果，叫什么？",
+      "expected_behavior": "激活 motion-term-lookup，抓时机词「滚」→ 第三章，返回 Scroll Reveal（滚动显现），附原文话术与场景",
+      "notes": "正面场景：典型时机检索"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "列表加载的时候那个灰色的占位块叫什么？就是跟真实布局一样的那个",
+      "expected_behavior": "激活 motion-term-lookup，返回 Skeleton Screen（骨架屏），附原文话术与典型场景",
+      "notes": "正面场景：纯查词。此条由原 P2「除了转圈还能显示什么」改造而来——原表述是选型问题，经盲测发现路由应归 loading-state-pick，已回炉重写（见 test-results.md）"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "有没有那种鼠标靠近按钮，按钮会被吸过去一点的效果",
+      "expected_behavior": "激活 motion-term-lookup，返回 Magnetic Button（磁铁按钮），并提示它是悬停类、触屏无替代会失效",
+      "notes": "正面场景：只会用现象描述，说不出名字"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "Parallax 和 Scroll Reveal 有什么区别，我想用在品牌故事页",
+      "expected_behavior": "激活 motion-term-lookup，解释两者差异（一个是速度差造景深、一个是进视野才播入场），并提示 Parallax 移动端应关闭",
+      "notes": "正面场景：术语确认 + 选型"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "帮我把这个悬停卡片的想法写成能直接给 AI 的完整描述",
+      "expected_behavior": "不应激活 motion-term-lookup，应走 interaction-brief（不是找名字，是要成稿）",
+      "notes": "诱饵：相邻的成稿需求"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "骨架屏的明暗呼吸要多久一个周期",
+      "expected_behavior": "不应激活 motion-term-lookup，应走 motion-param-calibrate（问的是参数取值，且属循环类必须加「缓慢」）",
+      "notes": "诱饵：问的是参数不是名字"
+    },
+    {
+      "id": "should-not-trigger-03",
+      "type": "should_not_trigger",
+      "prompt": "我这页动效太多了，帮我看看该砍哪些",
+      "expected_behavior": "不应激活 motion-term-lookup，应走 motion-audit",
+      "notes": "诱饵：审查需求"
+    },
+    {
+      "id": "should-not-trigger-04",
+      "type": "should_not_trigger",
+      "prompt": "除了转圈，列表加载的时候还能显示什么？",
+      "expected_behavior": "不应激活 motion-term-lookup，应走 loading-state-pick——用户要的是「我这种情况该用哪个」的选型建议，不是词条清单",
+      "notes": "诱饵：查词 vs 选型的分界。此条原为本 skill 的正面用例，盲测中被独立 agent 判为应归 loading-state-pick，经复核认可，改为诱饵（见 test-results.md）"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "我想做一个滚动的时候卡片跟着转 3D 的效果",
+      "expected_behavior": "可激活 motion-term-lookup，但要说明这是两个效果的组合（滚动触发 + 3D 倾斜 / 卡片翻转），书里没有现成词条，需自行拼装并提示 3D 变换在移动端的性能代价",
+      "notes": "边界：跨类组合。查表查不到完整答案，不能硬套一个名字"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "我想让页面看起来有种科技感",
+      "expected_behavior": "可激活 motion-term-lookup，返回粒子背景 / 渐变流动等候选，但必须先提示这些是装饰性特效，属「一页最多一两个」的克制对象",
+      "notes": "边界：只有感觉词，且目标恰好是全书自限条款的靶子"
+    }
+  ],
+  "minimum_pass_rate": 0.8,
+  "notes": "至少 3 条 should_trigger + 2 条 should_not_trigger + 1 条 edge_case。全部 should_not_trigger 必须通过（诱饵容错为 0）。"
+}

@@ -1,0 +1,73 @@
+{
+  "skill": "motion-audit",
+  "version": "0.1.0",
+  "source_book": "Vibe Coding 前端交互效果术语手册 — 才聚智能（未署名）",
+  "darwin_compatible": true,
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "帮我看看这个落地方案有没有问题：每个区块淡入、每张卡片悬停上浮、背景还有粒子在飘",
+      "expected_behavior": "激活 motion-audit，判定注意力预算超支（重点动效 > 2），指出粒子落在大面积背景会抢正文，给出砍到 1–2 个的具体建议",
+      "notes": "正面场景：典型「堆动效」"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "桌面端都好好的，一上手机卡片点一下没反应，得点两下才行",
+      "expected_behavior": "激活 motion-audit 组三（输入设备），诊断为 hover 在触屏上的双击陷阱，要求补移动端替代触发",
+      "notes": "正面场景：设备失配"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "滚动的时候有点卡，是不是我哪里写错了",
+      "expected_behavior": "激活 motion-audit 组二（渲染成本），检查是否用 width/height/top 做动画、是否在滚动事件里同步读写布局、视差是否移动端关闭",
+      "notes": "正面场景：性能体检"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "上线前想把整站的动效过一遍，怕有硬伤",
+      "expected_behavior": "激活 motion-audit，按四组逐项过，输出致命/明显/建议三级报告，每条带问题-后果-改法",
+      "notes": "正面场景：全量审查"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "给这个商品卡加个悬停上浮，提示词怎么写",
+      "expected_behavior": "不应激活 motion-audit，应走 interaction-brief（方案尚不存在）",
+      "notes": "诱饵：事前成稿"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "悬停反馈给 0.25 秒会不会太快",
+      "expected_behavior": "不应激活 motion-audit，应走 motion-param-calibrate（单点参数判断，方案本身没问题）",
+      "notes": "诱饵：只问一个参数"
+    },
+    {
+      "id": "should-not-trigger-03",
+      "type": "should_not_trigger",
+      "prompt": "那个毛玻璃效果叫什么来着",
+      "expected_behavior": "不应激活 motion-audit，应走 motion-term-lookup",
+      "notes": "诱饵：纯查词"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "这个页面看着就是不好看，是不是动效不够高级",
+      "expected_behavior": "应激活 motion-audit，但首要结论是「这不是动效问题」——多半是排版、留白、层级、字重、色彩的问题，动效只是放大器而非来源；不应顺着用户去推荐更强的装饰特效",
+      "notes": "边界：用户的归因错了，考验是否顶住需求而不是迎合"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "列表删除一行之后，下面几行要平滑上移补位，这个该怎么写",
+      "expected_behavior": "可激活 motion-audit（若问的是现有实现）或 interaction-brief（若问的是怎么写）；但两者都应指出这是「布局动画 / FLIP」，超出本书 12 类覆盖范围，需要额外方案，不要硬套现成词条",
+      "notes": "边界：跨 skill 且超出书范围，正确动作是承认覆盖不到"
+    }
+  ],
+  "minimum_pass_rate": 0.8,
+  "notes": "至少 3 条 should_trigger + 2 条 should_not_trigger + 1 条 edge_case。全部 should_not_trigger 必须通过（诱饵容错为 0）。"
+}

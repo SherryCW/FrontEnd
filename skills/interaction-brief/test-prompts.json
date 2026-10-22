@@ -1,0 +1,73 @@
+{
+  "skill": "interaction-brief",
+  "version": "0.1.0",
+  "source_book": "Vibe Coding 前端交互效果术语手册 — 才聚智能（未署名）",
+  "darwin_compatible": true,
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "我想给价格表卡片加个悬停效果，但不知道怎么跟 AI 说清楚，每次做出来都不一样",
+      "expected_behavior": "激活 interaction-brief，先问/确认触发时机（悬停），再逐格填五要素，输出一句可复制的规格，并显式给出收尾状态（移开恢复原状）",
+      "notes": "正面场景：有明确对象与时机，缺规格"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "帮我写一段提示词：产品列表滚到可见区域的时候逐条淡入上浮",
+      "expected_behavior": "激活 interaction-brief，输出完整规格，且必须包含「只播放一次」这一收尾状态与 stagger 间隔数值",
+      "notes": "正面场景：滚动类必答项（once）容易漏，考校验能力"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "设计师就给了我一句『点删除后弹个框，要从下面滑上来』，这个能直接丢给 AI 吗？",
+      "expected_behavior": "激活 interaction-brief，判定该描述缺弹层三要素（遮罩 / 出现方向 / 关闭方式），补齐后重写",
+      "notes": "正面场景：验收别人的描述能不能执行"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "我要做一个能拖拽排序的待办列表，怕漏了什么没跟 AI 说",
+      "expected_behavior": "激活 interaction-brief，补拖拽三问（拖什么 / 能拖到哪 / 松手后怎样），并补让位动画与落点高亮",
+      "notes": "正面场景：类别专属必答项"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "那个鼠标放上去有光跟着走的效果叫什么来着",
+      "expected_behavior": "不应激活 interaction-brief，应走 motion-term-lookup（用户是在找名字，不是要规格）",
+      "notes": "诱饵：定名需求，与成稿需求相邻"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "我的卡片悬停做出来了，但看着有点机械，像 PPT 的飞入",
+      "expected_behavior": "不应激活 interaction-brief，应走 motion-param-calibrate（规格已完整，问题是参数族派错，多半用了 linear）",
+      "notes": "诱饵：效果已存在，只需调参"
+    },
+    {
+      "id": "should-not-trigger-03",
+      "type": "should_not_trigger",
+      "prompt": "这个落地页看着很廉价，帮我说说哪儿有问题",
+      "expected_behavior": "不应激活 interaction-brief，应走 motion-audit（事后体检）",
+      "notes": "诱饵：方向相反（审成品 vs 写成稿）"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "我想让首页高级一点",
+      "expected_behavior": "可以激活 interaction-brief，但执行到步骤 1 就应判停——提取不到时机，转 motion-term-lookup 给候选；不应直接开始填五要素",
+      "notes": "边界：需求未成形。填表等于替用户做决定，产出必返工"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "帮我给按钮加个点击效果，按下的时候缩一下",
+      "expected_behavior": "应激活 interaction-brief，但需补全收尾（松开弹回）与数值（95%、0.15 秒），并提示这属于通用交互不需要额外装饰",
+      "notes": "边界：描述很短但方向明确，不该因信息少就拒绝，只需补齐"
+    }
+  ],
+  "minimum_pass_rate": 0.8,
+  "notes": "至少 3 条 should_trigger + 2 条 should_not_trigger + 1 条 edge_case。全部 should_not_trigger 必须通过（诱饵容错为 0）。"
+}

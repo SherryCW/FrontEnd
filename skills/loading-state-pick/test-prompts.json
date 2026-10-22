@@ -1,0 +1,73 @@
+{
+  "skill": "loading-state-pick",
+  "version": "0.1.0",
+  "source_book": "Vibe Coding 前端交互效果术语手册 — 才聚智能（未署名）",
+  "darwin_compatible": true,
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "列表接口大概要等 3 秒，中间显示什么比较好",
+      "expected_behavior": "激活 loading-state-pick，判时长（>1s）+ 结构可预期（列表）→ 骨架屏，并提示骨架必须与真实布局尺寸一致",
+      "notes": "正面场景：最典型的分派题"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "AI 回答要等十几秒，放个转圈行不行",
+      "expected_behavior": "激活 loading-state-pick，判结构不可预期 → 骨架屏不成立，推荐打字机 / 流式把等待切碎，并补超时兜底",
+      "notes": "正面场景：不可预期内容的等待形态"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "上传文件想显示进度，用进度条还是环形",
+      "expected_behavior": "激活 loading-state-pick，判有真实进度 → 进度条（横向）或环形，按位置与空间选，不用转圈",
+      "notes": "正面场景：有进度的等待"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "现在页面上就一个转圈，用户反馈说等得太久，是不是该换掉",
+      "expected_behavior": "激活 loading-state-pick，先估时长与结构可预期性，给出替代形态，并检查是否为短操作误用骨架屏的反向问题",
+      "notes": "正面场景：已有方案要改形态"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "骨架屏那个明暗呼吸一个周期设多久，用什么曲线",
+      "expected_behavior": "不应激活 loading-state-pick，应走 motion-param-calibrate（形态已定，问的是参数；属循环类必须「缓慢」）",
+      "notes": "诱饵：参数问题"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "帮我把骨架屏这个效果写成一段能直接给 AI 的描述",
+      "expected_behavior": "不应激活 loading-state-pick，应走 interaction-brief（形态已定，要成稿）",
+      "notes": "诱饵：成稿需求"
+    },
+    {
+      "id": "should-not-trigger-03",
+      "type": "should_not_trigger",
+      "prompt": "页面加载动画做得太花哨了，帮我看看怎么收敛",
+      "expected_behavior": "不应激活 loading-state-pick，应走 motion-audit（注意力预算 / 装饰过度审查）",
+      "notes": "诱饵：审查需求"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "后台接口要 8 秒，我想做个特别好看的全屏加载页",
+      "expected_behavior": "应激活 loading-state-pick，但第一句必须是「这 8 秒大概率不该存在」——先优化接口，再谈形态；不应直接开始设计加载页",
+      "notes": "边界：形态优化救不了慢接口，考验是否敢逆着需求说"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "点赞之后列表要刷新，中间要不要显示个骨架屏",
+      "expected_behavior": "应激活 loading-state-pick，但结论应是「不显示加载态」——本地状态先行（乐观更新），骨架屏会打断操作连续性；需说明这一结论来自蒸馏者补充，书中未讨论该方向",
+      "notes": "边界：书里默认所有等待都要有可见反馈，实际上有一类正确做法是「没有加载态」"
+    }
+  ],
+  "minimum_pass_rate": 0.8,
+  "notes": "至少 3 条 should_trigger + 2 条 should_not_trigger + 1 条 edge_case。全部 should_not_trigger 必须通过（诱饵容错为 0）。"
+}

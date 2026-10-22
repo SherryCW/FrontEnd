@@ -1,0 +1,73 @@
+{
+  "skill": "motion-param-calibrate",
+  "version": "0.1.0",
+  "source_book": "Vibe Coding 前端交互效果术语手册 — 才聚智能（未署名）",
+  "darwin_compatible": true,
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "卡片悬停我给了 0.8 秒，总觉得拖沓，是时长设长了吗",
+      "expected_behavior": "激活 motion-param-calibrate，判定悬停属反馈类（0.2–0.3 秒），建议改到 0.25 秒，且指出若想更隆重应改曲线而非加时长",
+      "notes": "正面场景：时长越界"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "入场动效到底用 ease-out 还是 linear？我看两种都有人用",
+      "expected_behavior": "激活 motion-param-calibrate，明确 linear 是白名单（仅跑马灯 / 旋转 loading），入场用 ease-out，并解释 linear 会让运动像被传送",
+      "notes": "正面场景：曲线族派错"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "页面背景那个渐变色一直在缓慢流动，但看着还是有点吵",
+      "expected_behavior": "激活 motion-param-calibrate，判定为循环类，要求周期≥5 秒并显式加「缓慢」，ease-in-out；若仍吵则考虑去掉",
+      "notes": "正面场景：循环类必加限定"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "为什么我的动画明明 0.3 秒，看着还是有点廉价",
+      "expected_behavior": "激活 motion-param-calibrate，指出质感由曲线与位移决定，检查是否存在 linear 误用、位移过小、或用 layout 属性代替 transform",
+      "notes": "正面场景：说不清哪儿不对的节奏问题"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "帮我写一个从底部滑上来的弹窗，要给 AI 的完整描述",
+      "expected_behavior": "不应激活 motion-param-calibrate，应走 interaction-brief（要先有五格完整描述，才谈得上调参）",
+      "notes": "诱饵：前置条件不成立"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "为什么这个页面在手机上滑动很卡",
+      "expected_behavior": "不应激活 motion-param-calibrate，应走 motion-audit（先查属性与动效数量，可能是布局属性动画或数量超支）",
+      "notes": "诱饵：性能问题不是参数问题"
+    },
+    {
+      "id": "should-not-trigger-03",
+      "type": "should_not_trigger",
+      "prompt": "接口要等 5 秒，中间显示什么比较好",
+      "expected_behavior": "不应激活 motion-param-calibrate，应走 loading-state-pick（选形态，不是调节奏）",
+      "notes": "诱饵：形态选型"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge_case",
+      "prompt": "入场动画设成 1.2 秒，是不是太长了？但我想要那种很隆重的感觉",
+      "expected_behavior": "应激活 motion-param-calibrate，判定超过 1 秒需砍；同时指出「隆重感」应靠位移距离与 ease-out 曲线获得，不靠时长；也可提示若确实是页面级仪式性转场可例外",
+      "notes": "边界：用户用审美需求对抗硬边界，考验是否既守边界又给替代方案"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge_case",
+      "prompt": "数字从 0 滚到 100 万，我用 0.6 秒行不行",
+      "expected_behavior": "应激活 motion-param-calibrate，指出计数类不属于「移动」，不适用 0.4–0.8 秒入场区间，书里给的是 2 秒且末尾减速",
+      "notes": "边界：唯一一处书自己违反了「超过 1 秒拖沓」的地方，考验是否识别例外"
+    }
+  ],
+  "minimum_pass_rate": 0.8,
+  "notes": "至少 3 条 should_trigger + 2 条 should_not_trigger + 1 条 edge_case。全部 should_not_trigger 必须通过（诱饵容错为 0）。"
+}
