@@ -1,0 +1,64 @@
+{
+  "skill": "motion-gate",
+  "version": "0.1.0",
+  "source_book": "Vibe Coding 前端交互效果术语手册 — 才聚智能（未署名），准入标准部分为蒸馏者补充",
+  "darwin_compatible": true,
+  "test_cases": [
+    {
+      "id": "should-trigger-01",
+      "type": "should_trigger",
+      "prompt": "我想给命令面板加个弹出的缩放动画，像 Linear 那样，觉得会比较高级",
+      "expected_behavior": "激活 motion-gate。频率闸门判定为每天上百次的高频操作，结论是不加动画；指出目的不成立（『比较高级』不是目的）；允许的例外只有 ≤80ms 的透明度过渡以避免硬切",
+      "notes": "核心用例：正确答案是拒绝。若模型直接开始写 scale 动画即为失败"
+    },
+    {
+      "id": "should-trigger-02",
+      "type": "should_trigger",
+      "prompt": "这个落地页看着很廉价，我加些高级动效能不能救回来",
+      "expected_behavior": "激活 motion-gate。介入并给出判定：廉价感来源是排版、留白、层级、字重、配色，动效只是放大器；用动效补这些窟窿恰好产出廉价感；不推荐更强的特效",
+      "notes": "必须介入但结论是『不该用动效解决』。沉默或推荐特效都算失败"
+    },
+    {
+      "id": "should-trigger-03",
+      "type": "should_trigger",
+      "prompt": "列表里删除一行之后，下面几行会自动跳上去，我想加个动效让它平滑一点，有必要吗",
+      "expected_behavior": "激活 motion-gate。频率（偶发）与目的（防止突变、维持空间连续性）均通过，判定为加；指出动的是其余行而非被删行；随后转 interaction-brief 写规格",
+      "notes": "正面用例：闸门全过，结论是加"
+    },
+    {
+      "id": "should-trigger-04",
+      "type": "should_trigger",
+      "prompt": "页面上现在到处都是动效，每个区块淡入、卡片悬停上浮、背景粒子在飘、标题还在循环流动，我该怎么取舍",
+      "expected_behavior": "激活 motion-gate。先算全局预算：重点动效超过 2 个、常驻运动超过 1 处，先砍再谈；给出具体砍哪一个与保留哪一个",
+      "notes": "正面用例：考全局预算检查，输出必须带数字与取舍对象"
+    },
+    {
+      "id": "should-not-trigger-01",
+      "type": "should_not_trigger",
+      "prompt": "帮我写一段提示词：产品列表滚到可见区域的时候逐条淡入上浮",
+      "expected_behavior": "不激活 motion-gate，应激活 interaction-brief",
+      "notes": "诱饵：已决定要加，只缺规格"
+    },
+    {
+      "id": "should-not-trigger-02",
+      "type": "should_not_trigger",
+      "prompt": "那个鼠标放上去有光跟着走的效果叫什么来着",
+      "expected_behavior": "不激活 motion-gate，应激活 motion-term-lookup",
+      "notes": "诱饵：只问术语名称"
+    },
+    {
+      "id": "edge-01",
+      "type": "edge",
+      "prompt": "我的页面看着有点闷，想加点动的东西，但说不上来加在哪",
+      "expected_behavior": "激活 motion-gate，但先反问『闷在哪里』：信息密度、层级、留白缺失都表现为闷，加动效只会让它动起来而不会让它清楚；必要时转 motion-term-lookup 找具体效果，或直接判定方向错误",
+      "notes": "边缘：模糊诉求 + 归因错误风险并存"
+    },
+    {
+      "id": "edge-02",
+      "type": "edge",
+      "prompt": "这个弹窗的动效做完了，但我觉得它根本不需要动画，帮我看看是不是该去掉",
+      "expected_behavior": "激活 motion-gate（判断该不该存在），确认频率与目的后可判定保留或去掉；如需评价实现质量再转 motion-audit",
+      "notes": "边缘：方案已存在但问题指向准入而非质量，判断线是『问的是该不该而不是好不好』"
+    }
+  ]
+}

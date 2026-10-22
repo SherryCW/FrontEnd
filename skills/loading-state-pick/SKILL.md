@@ -7,6 +7,7 @@ description: |
   或已有一个转圈方案但用户觉得慢、跳出率高。
   不适用于：要写完整动效规格（用 interaction-brief）；要审整页动效（用 motion-audit）；
   要调动画节奏（用 motion-param-calibrate）。
+  还没决定要不要加、或想判断值不值（用 motion-gate）；只问某个操作该不该有动画时也归它。
 source_book: 《Vibe Coding 前端交互效果术语手册》 才聚智能（未署名）
 source_chapter: 附录C 第5条 / 第二章 / 第十一章
 tags: [loading, perceived-performance, ux, decision-rule]
@@ -193,6 +194,11 @@ related_skills:
 - 状态机设计（loading / success / error / empty）——四态齐全才是完整方案，本 skill 只管 loading 这一态。
 
 ---
+
+### 扩展资源
+
+- **术语查表**：`motion-term-lookup/reference/terminology.md` — 第二章（骨架屏 / 渐进加载 / 模糊占位）、第十一章（进度条 / 环形进度）
+- **组件配方**：`interaction-brief/reference/recipes.md` 第 7 条（Toast）与第 13 条（骨架屏）
 
 ## 相关 skills
 

@@ -1,65 +1,94 @@
 # FrontEnd
 
-五个前端交互动效的 skill，给 AI 用。
+六个前端交互动效 skill，加两张可直接施工的参考表。给 AI 用，也给不想读长篇规范的人用。
 
-解决的问题很具体：你想让某个东西动一下，但说不清怎么动。「高级一点」「有点科技感」「照着 XX 网站那样」——这类话丢给 AI，每次做出来都不一样，因为你没说清它要往哪动、动多久、动完停在哪。这五个 skill 就是把这层模糊翻译成可执行规格的工具链。
+要解决的问题很具体：你想让某个东西动一下，但说不清怎么动。「高级一点」「有点科技感」「照着 XX 网站那样」丢给 AI，每次做出来都不一样——你没说清它往哪动、动多久、动完停在哪。
 
-拆解自《Vibe Coding 前端交互效果术语手册》（才聚智能，17 页速查手册）的 68 条术语与其方法部分。
+## 里面有什么
 
----
-
-## 五个 skill
+**六个 skill**
 
 | skill | 干什么 | 什么时候用 |
 |---|---|---|
-| [`interaction-brief`](skills/interaction-brief/) | 把模糊意图写成五格规格：触发时机 / 对象 / 变化 / 时长缓动 / **收尾状态** | 效果还没做出来，要写提示词 |
-| [`motion-term-lookup`](skills/motion-term-lookup/) | 说不出名字时定位术语。68 条全表挂在 `reference/terminology.md` | 「那种滚到才出现的效果叫什么」 |
-| [`motion-param-calibrate`](skills/motion-param-calibrate/) | 按动画角色分派时长与缓动，不是随便填个数 | 做出来了，但节奏不对、发飘、像 PPT |
-| [`motion-audit`](skills/motion-audit/) | 四组体检：注意力预算 / 渲染成本 / 输入设备 / 状态完整性 | 上线前挑硬伤 |
-| [`loading-state-pick`](skills/loading-state-pick/) | 按等待时长 × 结构可预期性 × 有无真实进度选加载形态 | 决定加载中显示什么 |
+| [`motion-gate`](skills/motion-gate/) | 先判该不该动：使用频率分四档，目的必须能命名 | 想加动效但不确定值不值 |
+| [`interaction-brief`](skills/interaction-brief/) | 写成五格规格：触发 / 对象 / 变化 / 时长缓动 / **收尾状态** | 已决定要加，要写提示词 |
+| [`motion-term-lookup`](skills/motion-term-lookup/) | 说不出名字时定位术语，262 条按触发时机分 20 类 | 「那种滚到才出现的效果叫什么」 |
+| [`motion-param-calibrate`](skills/motion-param-calibrate/) | 按动画角色分派时长与缓动，含具体曲线值 | 做出来了，但发飘、机械、像 PPT |
+| [`motion-audit`](skills/motion-audit/) | 五组体检：注意力预算 / 渲染成本 / 输入设备 / 状态完整性 / 无障碍 | 上线前挑硬伤 |
+| [`loading-state-pick`](skills/loading-state-pick/) | 按时长 × 结构可预期性 × 真实进度选加载形态 | 决定加载中显示什么 |
+
+**三张参考表**
+
+- [`terminology.md`](skills/motion-term-lookup/reference/terminology.md) — 262 条术语 / 20 类，每条含中英文名、效果说明、**可直接复制的话术**、典型场景
+- [`easing-duration.md`](skills/motion-param-calibrate/reference/easing-duration.md) — 角色时长表、五条曲线（附公开来源）、距离修正、弹簧预设、**减弱动态配方**
+- [`recipes.md`](skills/interaction-brief/reference/recipes.md) — 16 类组件的完整规格：触发、属性、曲线、时长、收尾、降级、最常见的错法
 
 ## 路由
 
-这五个 skill 的边界是互相咬合的，选错的代价是拿到的答案不对路：
+六个 skill 的边界互相咬合，选错的代价是答案不对路：
 
 ```
-说不出是什么      → motion-term-lookup
-还没做，要规格    → interaction-brief
-做完了，节奏不对  → motion-param-calibrate
-做完了，哪儿怪    → motion-audit
-加载中显示什么    → loading-state-pick
+不确定该不该加  → motion-gate        （结论经常是「不加」）
+说不出是什么    → motion-term-lookup
+还没做，要规格  → interaction-brief
+做完了，节奏不对→ motion-param-calibrate
+做完了，哪儿怪  → motion-audit
+加载中显示什么  → loading-state-pick
 ```
 
-最容易混的两处：
+最容易混的三处：
 
-- **查词 vs 选型**。`motion-term-lookup` 只回答「这东西叫什么」。问「我这种情况该用哪个」，加载类归 `loading-state-pick`，其余由 `interaction-brief` 在补规格时一并选。
-- **视觉设计 vs 动效**。排版、留白、层级、配色的问题，动效一项都查不出来——而且拿动效去补这些窟窿，恰好是「廉价感」的成因之一。`motion-audit` 遇到这类问题会直接说「这不是动效的活」。
+- **查词 vs 选型。** `motion-term-lookup` 只回答「这东西叫什么」。问「我这种情况该用哪个」，加载类归 `loading-state-pick`，其余由 `interaction-brief` 在补规格时一并选。
+- **该不该 vs 好不好。** `motion-gate` 判存在性，`motion-audit` 判质量。已经有的东西问「要不要去掉」，仍归 gate。
+- **视觉设计 vs 动效。** 排版、留白、层级、配色的问题，动效一项都查不出来——拿动效去补这些窟窿，恰好是「廉价感」的成因。`motion-gate` 和 `motion-audit` 遇到这类问题都会直接说「这不是动效的活」。
 
-## 用法
+## 为什么按「触发时机」分类
 
-每个 skill 是一个目录，`SKILL.md` 带 YAML frontmatter（`name` / `description` / 触发信号 / 边界）。
+同类词库大多按**变化类型**组织（淡入 / 位移 / 缩放 / 弹簧），查的时候要先想「它动了什么」。这里按**时机**组织：滚动时、悬停时、点击时、拖拽时。
 
-装到本地技能库：
+因为人描述交互时，起点是「我滚到这儿，它才出来」，不是「我要一个 slide-in」。先说什么时候发生，再说动成什么样——这个顺序跟脑子的顺序一致。
+
+## 规模与来源
+
+| | 条数 |
+|---|---|
+| 原书《Vibe Coding 前端交互效果术语手册》逐条保留 | 68 |
+| 蒸馏者扩展（补原书整块缺失的能力） | 194 |
+| 合计 | **262** |
+
+扩展的八类，都是原书 12 类里没有覆盖的：
+
+手势与多点触控（22）· 布局与共享元素（20）· 物理与弹簧（20）· 文本与数字动画（21）· 3D 与透视（18）· 滚动驱动进阶（22）· 系统偏好与无障碍（16）· 触觉与声音（14）
+
+新增的 `motion-gate` 也是补缺：原书只有「一页最多一两个」这句数量上限，没给准入标准，所以读者知道「不要多」，不知道「哪一两个才配」。
+
+## 原书的硬伤，以及这里怎么处理
+
+- **零提 `prefers-reduced-motion`。** 一本教人大量加入场、视差、粒子和光斑跟随的手册，完全不提无障碍降级——这是合规问题。本仓库补了完整降级配方（`easing-duration.md` 第六节），并在 `motion-audit` 里列为必查项。
+- **把「高级感」归因于动效。** 实际来源是排版、留白、层级、字重；动效只是放大器。这个错误归因会让新手拿动效去补排版留下的问题，恰好产出它自己反对的「廉价感」。
+- **12 类里没有一类涉及应用态。** 乐观更新、并发中断、四态设计全部缺席。扩展类补了布局动画与手势，应用态仍需其他工具。
+- **自破「1 秒」硬边界。** 它写「超过 1 秒会显得拖沓」，正文却给了数字滚动 2 秒、渐变流动 8 秒。不是笔误——计数和循环是**周期**不是**时长**，判据不同。原书没写出这个区分，这里补成了四条例外条款。
+
+## 安装
 
 ```bash
 cp -R skills/* ~/.workbuddy/skills/
 ```
 
-放进 `~/.claude/skills/` 或任何读 `SKILL.md` 约定的 agent 框架同理。
+放进 `~/.claude/skills/` 或任何读 `SKILL.md` 约定的框架同理。
 
-每个目录下的 `test-prompts.json` 是一组路由测试用例，分 `should_trigger` / `should_not_trigger` / `edge` 三类。改完 skill 要跑一遍，尤其别把「必须介入但结论是拒绝」的场景写进「不要使用」列表里——agent 会照字面执行，该拦的事一件不拦。
+每个 skill 目录下的 `test-prompts.json` 是路由测试用例，分 `should_trigger` / `should_not_trigger` / `edge` 三类。**改完 skill 要跑一遍**，尤其别把「必须介入但结论是拒绝」的场景写进「不要使用」列表——agent 会照字面执行，该拦的事一件不拦，这是本项目盲测时实际踩过的坑。
 
-## 这本书的硬伤
+## 与同类项目的关系
 
-拆解时发现的问题，已写进各 skill 的边界段，不藏：
+- **[emilkowalski/skills](https://github.com/emilkowalski/skills)**（MIT）在专业深度上更强：作者的曲线取值、施工流程、兜底清单来自 Vercel / Linear 的一线经验。本项目在参数层面有重叠，深度不及。差异在分类方式、中文话术、路由测试。
+- **[pursuerlin/motion-lexicon](https://github.com/pursuerlin/motion-lexicon)**（MIT）在词库广度上更强：244 条、中英双语、带 23 个可交互演示。本项目 262 条里 194 条是扩展，词条量接近但**没有可视化演示**，这是明显短板。
+- **[ibelick/ui-skills](https://github.com/ibelick/ui-skills)**（MIT）是聚合层，有 CLI 与 MCP 分发，本项目没有。
 
-- **零提 `prefers-reduced-motion`。** 一本教人大量加入场、视差、粒子和光斑跟随的手册，完全不提无障碍降级。这是合规问题，不是审美问题。
-- **把「高级感」归因于动效。** 实际来源是排版、留白、层级、字重；动效只是放大器。用动效去补排版留下的问题，会产出它自己反对的「廉价感」。
-- **12 类里没有一类涉及应用态。** 乐观更新、FLIP、并发中断、四态设计全部缺席。遇到这类问题，各 skill 会明说超出范围。
-- **自己的硬边界被自己违反两次。** 「超过 1 秒会显得拖沓」在正文里被数字滚动（2 秒）和渐变流动（周期 8 秒）破例。不是笔误——计数和循环不是「移动」，判据不同。这个区分原书没写，补进了 `motion-param-calibrate` 的例外条款。
+目标是让 AI 写出最高水准动效，装 emil 那套；要一个能演示能搜索的中文词库，用 motion-lexicon。本项目的位置是「中文、按触发时机查、话术可直接粘贴、每一步都有测试可验」。
 
 ## 关于引用
 
-`skills/motion-term-lookup/reference/terminology.md` 收录了 68 条术语的话术原文，逐字保留（含原文在中文与数字/拉丁字母之间的半角空格），因为改一个字就可能改掉参数语义。
+原书 68 条的话术逐字保留（含原文在中文与数字/拉丁字母之间的半角空格），因为改一个字就可能改掉参数语义。扩展条目的话术是本项目写的，数值是通用起点，**不是为你的场景算过的**。
 
-蒸馏的中间产物——源文本、候选池、被否的条目、盲测记录——没有放进这个仓库。源文本与全书逐字引用涉及原书版权，公开不合适。需要审计痕迹的话，本地留存。
+蒸馏中间产物（源文本、候选池、被否条目、盲测记录）不在此仓库——源文本与全书逐字引用涉及原书版权。审计痕迹本地留存。

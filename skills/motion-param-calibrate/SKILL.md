@@ -7,6 +7,7 @@ description: |
   或给出一个超过 1 秒、用 linear 入场、循环不加"缓慢"的规格需要修正。
   不适用于：描述还没写完整（用 interaction-brief）；不知道要什么效果（用 motion-term-lookup）；
   要判断该不该有动效（用 motion-audit）。
+  还没决定要不要加、或想判断值不值（用 motion-gate）；只问某个操作该不该有动画时也归它。
 source_book: 《Vibe Coding 前端交互效果术语手册》 才聚智能（未署名）
 source_chapter: 附录A 动效参数速查表
 tags: [easing, duration, motion-quality, parameters]
@@ -177,6 +178,10 @@ related_skills:
 - 性能预算——那是帧率与合成层的账本，属 `motion-audit`。
 
 ---
+
+### 扩展资源
+
+- **参数表本体**：`reference/easing-duration.md` — 角色时长表、五条曲线、距离修正、弹簧预设、减弱动态配方
 
 ## 相关 skills
 

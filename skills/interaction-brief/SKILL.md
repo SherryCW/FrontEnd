@@ -6,6 +6,7 @@ description: |
   在给弹层、拖拽、滚动、表单这类交互补它自己的必填项。
   不适用于：连要什么效果都还没定（用 motion-term-lookup）；效果做出来了但节奏不对（用 motion-param-calibrate）；
   页面已经做出来要挑毛病（用 motion-audit）。
+  还没决定要不要加、或想判断值不值（用 motion-gate）；只问某个操作该不该有动画时也归它。
 source_book: 《Vibe Coding 前端交互效果术语手册》 才聚智能（未署名）
 source_chapter: 第一章 1.2 / 附录B
 tags: [interaction-spec, prompt-design, ux-motion, acceptance-criteria]
@@ -121,7 +122,7 @@ related_skills:
    - 判停条件：若用户连「什么时候动」都说不出、只反复说"好看""高级"，说明需求还没成形 → **停止填表，转 `motion-term-lookup`** 拿 2–3 个候选给他挑。
 
 2. **定名（第一层）。**
-   - 用时机定位到 12 类之一，再在该类里找最接近的术语（查 `motion-term-lookup/reference/terminology.md`）。
+   - 用时机定位到 20 类之一，再在该类里找最接近的术语（查 `motion-term-lookup/reference/terminology.md`）。
    - 完成标准：得到一个中英文术语名。查不到就跳过命名，直接进第 3 步用模板组装。
    - 注意：命名不是目的，是压缩手段。有名字就等于免费获得一段 AI 已知的实现。
 
@@ -191,6 +192,11 @@ related_skills:
 - 设计系统 / 设计令牌：颜色、间距、字体的规范化——那是另一套体系，本 skill 只用它的产出（"主题色"）。
 
 ---
+
+### 扩展资源
+
+- **组件配方表**：`reference/recipes.md` — 16 类组件的完整规格（触发 / 属性 / 曲线 / 时长 / 收尾 / 降级 / 常见错）
+- **参数取值**：`motion-param-calibrate/reference/easing-duration.md` — 时长、曲线、弹簧、减弱动态配方
 
 ## 相关 skills
 
