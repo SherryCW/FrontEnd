@@ -1,8 +1,24 @@
 # FrontEnd
 
-六个前端交互动效 skill，加两张可直接施工的参考表。给 AI 用，也给不想读长篇规范的人用。
+六个前端交互动效 skill，加三张可直接施工的参考表。
 
-要解决的问题很具体：你想让某个东西动一下，但说不清怎么动。「高级一点」「有点科技感」「照着 XX 网站那样」丢给 AI，每次做出来都不一样——你没说清它往哪动、动多久、动完停在哪。
+**这套东西是给不会做动效的人用的。** 不是给设计师、也不是给资深前端——是给「知道页面差点意思，但说不出差在哪、也不知道怎么让 AI 改」的人。所以所有入口都是白话：你描述你看到的样子，它告诉你那叫什么、参数给多少、这句话怎么讲给 AI。
+
+## 如果你是新手，从这三句开始
+
+不用读下面任何一节。记住这三句就能解决大部分情况：
+
+1. **小东西 0.15 秒，卡片弹窗 0.25 秒，整页 0.35 秒。** 曲线一律用 `ease-out`，不要用 `linear`。
+2. **写提示词必带「动完之后什么样」。** 「弹出来」不够，要说「弹出来，点遮罩消失」。漏了这一句，做出来就是进得去出不来。
+3. **一屏只让一个东西动。** 想加第二个的时候，先想清楚第一个是不是该删掉。
+
+想看「我这种效果叫什么」，直接翻 [白话反查表](skills/motion-term-lookup/reference/terminology.md)——左边是你会说的话，右边是它的名字。
+想直接抄一段能用的，翻 [组件配方](skills/interaction-brief/reference/recipes.md)。
+觉得自己加太多了，翻 [motion-gate](skills/motion-gate/)。
+
+## 要解决的问题
+
+很具体：你想让某个东西动一下，但说不清怎么动。「高级一点」「有点科技感」「照着 XX 网站那样」丢给 AI，每次做出来都不一样——你没说清它往哪动、动多久、动完停在哪。
 
 ## 里面有什么
 
@@ -17,10 +33,10 @@
 | [`motion-audit`](skills/motion-audit/) | 五组体检：注意力预算 / 渲染成本 / 输入设备 / 状态完整性 / 无障碍 | 上线前挑硬伤 |
 | [`loading-state-pick`](skills/loading-state-pick/) | 按时长 × 结构可预期性 × 真实进度选加载形态 | 决定加载中显示什么 |
 
-**三张参考表**
+**三张参考表**（每张开头都有新手入口，不用读全）
 
-- [`terminology.md`](skills/motion-term-lookup/reference/terminology.md) — 262 条术语 / 20 类，每条含中英文名、效果说明、**可直接复制的话术**、典型场景
-- [`easing-duration.md`](skills/motion-param-calibrate/reference/easing-duration.md) — 角色时长表、五条曲线（附公开来源）、距离修正、弹簧预设、**减弱动态配方**
+- [`terminology.md`](skills/motion-term-lookup/reference/terminology.md) — 262 条术语 / 20 类。开头两节专为新手：「只看这 24 条」（按场景分八组）+「白话反查表」（50 组「你会这么说 → 它叫」）
+- [`easing-duration.md`](skills/motion-param-calibrate/reference/easing-duration.md) — 开头是「三个数口诀」和「想要某种感觉 → 抄这行」（脆 / 柔 / 弹 / 沉 / 稳 / 隆重），后面才是角色时长表、五条曲线、距离修正、弹簧预设、**减弱动态配方**
 - [`recipes.md`](skills/interaction-brief/reference/recipes.md) — 16 类组件的完整规格：触发、属性、曲线、时长、收尾、降级、最常见的错法
 
 ## 路由
@@ -81,11 +97,27 @@ cp -R skills/* ~/.workbuddy/skills/
 
 ## 与同类项目的关系
 
-- **[emilkowalski/skills](https://github.com/emilkowalski/skills)**（MIT）在专业深度上更强：作者的曲线取值、施工流程、兜底清单来自 Vercel / Linear 的一线经验。本项目在参数层面有重叠，深度不及。差异在分类方式、中文话术、路由测试。
-- **[pursuerlin/motion-lexicon](https://github.com/pursuerlin/motion-lexicon)**（MIT）在词库广度上更强：244 条、中英双语、带 23 个可交互演示。本项目 262 条里 194 条是扩展，词条量接近但**没有可视化演示**，这是明显短板。
-- **[ibelick/ui-skills](https://github.com/ibelick/ui-skills)**（MIT）是聚合层，有 CLI 与 MCP 分发，本项目没有。
+先讲清楚一件事：**下面这几个项目跟本仓库不是一个赛道，直接比谁更强没有意义。**
 
-目标是让 AI 写出最高水准动效，装 emil 那套；要一个能演示能搜索的中文词库，用 motion-lexicon。本项目的位置是「中文、按触发时机查、话术可直接粘贴、每一步都有测试可验」。
+- **[emilkowalski/skills](https://github.com/emilkowalski/skills)**（MIT）写给**已经会做设计**的人。它的曲线取值、施工关卡、兜底清单来自 Vercel / Linear 的一线经验，专业深度在本仓库之上。但它默认你知道「为什么要在这一步停下来」，也默认你在写代码。新手装上它，会得到一堆看不懂但很正确的规则。
+- **[pursuerlin/motion-lexicon](https://github.com/pursuerlin/motion-lexicon)**（MIT）是**查阅工具**：244 条、中英双语、23 个可交互演示。它的强项是「让你看到」，但看完还得自己去写。而且没有「我这种模糊的感觉该往哪走」的路径。
+- **[ibelick/ui-skills](https://github.com/ibelick/ui-skills)**（MIT）是聚合层，有 CLI 与 MCP 分发，本仓库没有。
+
+**本仓库的位置是「入门那一公里」**：从一句人话出发，走到一句能直接粘贴给 AI 的话。
+
+具体差在哪：
+
+| | 别人 | 这里 |
+|---|---|---|
+| 起点 | 你已经知道要什么效果 | 你只知道「感觉差点意思」 |
+| 语言 | 英文术语与参数 | 白话反查 → 术语 → 话术，三步都有中文 |
+| 输出 | 规则集 / 词库 / 成品组件 | 一段可以直接粘贴的话 |
+| 默认读者 | 设计师、工程师 | 没做过动效的人 |
+| 判断 | 「这个效果怎么做」 | 先问「要不要做」，答案经常是不做 |
+
+所以：**要专业深度，装 emil；要能看能查的词库，用 motion-lexicon；要有人从零把你带进这个领域，用这个。** 三者不冲突，可以先装 emil 当深度参考，用本仓库当入口和中文译层。
+
+代价也说清楚：本仓库没有可交互演示，没有 CLI 分发，参数深度不及 emil。这三处是真短板，不是谦辞。
 
 ## 关于引用
 
